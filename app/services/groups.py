@@ -21,9 +21,8 @@ class GroupsService:
         return group
     
     async def get_or_create_group(self, name: str):
-        try:
-            group = await self.get_group(name)
-        except ValueError:
+        group = await self.get_group(name)
+        if group is None:
             group = await self.create_group(GroupRegisterSchema(name=name))
         return group
     

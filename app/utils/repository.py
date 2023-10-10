@@ -40,10 +40,7 @@ class SQLAlchemyRepository(AbstractRepository):
             stmt = select(self.model).filter_by(**filter_by)
             res = await session.execute(stmt)
             res = res.first()
-            if res is None: 
-                raise ValueError
-            res = res[0].to_read_model()
-            return res
+            return None if res is None else res[0].to_read_model()
         
     async def create_one(self, values: dict):
         async with async_session_maker() as session:
