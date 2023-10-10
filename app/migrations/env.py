@@ -8,9 +8,9 @@ from alembic import context
 import os
 import sys
 
-sys.path.append(os.path.join(sys.path[0], "app"))
+# sys.path.append(os.path.join(sys.path[0], "app"))
 
-from app.config import DB_HOST, DB_PASS, DB_PORT, DB_USER, DB_NAME
+from app.config import settings
 from app.db.db import Base
 
 # this is the Alembic Config object, which provides
@@ -18,11 +18,11 @@ from app.db.db import Base
 config = context.config
 
 section = config.config_ini_section
-config.set_section_option(section, "DB_HOST", DB_HOST)
-config.set_section_option(section, "DB_PASS", DB_PASS)
-config.set_section_option(section, "DB_PORT", DB_PORT)
-config.set_section_option(section, "DB_USER", DB_USER)
-config.set_section_option(section, "DB_NAME", DB_NAME)
+config.set_section_option(section, "DB_HOST", settings.db.postgres_host)
+config.set_section_option(section, "DB_PASS", settings.db.postgres_pass)
+config.set_section_option(section, "DB_PORT", settings.db.postgres_port)
+config.set_section_option(section, "DB_USER", settings.db.postgres_user)
+config.set_section_option(section, "DB_NAME", settings.db.postgres_name)
 
 # Interpret the config file for Python logging.
 # This line sets up loggers basically.
