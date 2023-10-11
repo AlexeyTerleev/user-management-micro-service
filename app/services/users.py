@@ -12,7 +12,7 @@ class UsersService:
     async def get_user(self, filter_by):
         user = await self.users_repo.find_one(filter_by)
         return user
-    
+
     async def create_user(self, new_user: UserCreateSchema):
         user = await self.users_repo.create_one(
             {
@@ -24,11 +24,17 @@ class UsersService:
                 "email": new_user.email,
                 "role": new_user.role,
                 "group_id": new_user.group_id,
-                "img_path": str(new_user.img_path), 
+                "img_path": str(new_user.img_path),
             }
         )
         return user
     
-    async def delete_user(self, id: UUID):
-        await self.users_repo.delete({"id": id})
+    async def update_user(self, id: UUID, new_values):
+        upated_user = await self.users_repo.update_all(
+            {"id": id}, 
+            new_values
+        )
+        return upated_user
 
+    async def delete_user(self, id: UUID):
+        await self.users_repo.delete_all({"id": id})

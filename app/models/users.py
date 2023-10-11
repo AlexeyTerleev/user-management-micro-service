@@ -25,7 +25,9 @@ class Users(Base):
     img_path: Mapped[str]
     blocked: Mapped[bool] = mapped_column(default=False)
     created_at: Mapped[datetime] = mapped_column(server_default=func.now())
-    modified_at: Mapped[datetime] = mapped_column(server_default=func.now(), onupdate=func.current_timestamp())
+    modified_at: Mapped[datetime] = mapped_column(
+        server_default=func.now(), onupdate=func.current_timestamp()
+    )
 
     def to_read_model(self) -> UserSchema:
         return UserSchema(

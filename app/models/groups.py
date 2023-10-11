@@ -15,8 +15,4 @@ class Groups(Base):
     created_at: Mapped[datetime] = mapped_column(server_default=func.now())
 
     def to_read_model(self) -> GroupSchema:
-        return GroupSchema(
-            id=self.id,
-            name=self.name,
-            created_at=self.created_at,
-        )
+        return GroupSchema(id=self.id, name=self.name, created_at=self.created_at,)

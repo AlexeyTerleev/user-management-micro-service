@@ -5,8 +5,6 @@ from app.utils.roles import Role
 import re
 
 
-
-
 class UserSchema(BaseModel):
     id: UUID
     hashed_password: str
@@ -21,7 +19,6 @@ class UserSchema(BaseModel):
     blocked: bool
     created_at: datetime
     modified_at: datetime
-
 
     @field_validator("phone_number")
     def phone_validation(cls, v):
@@ -56,6 +53,25 @@ class UserRegisterSchema(BaseModel):
         from_attributes = True
 
 
+class UserUpdateSchema(BaseModel):
+    name: str | None = None
+    surname: str | None = None
+    username: str | None = None
+    phone_number: str | None = None
+    email: EmailStr | None = None
+    role: Role | None = None
+
+    @field_validator("phone_number")
+    def phone_validation(cls, v):
+        regex = r"^(\+)[1-9][0-9\-\(\)\.]{9,15}$"
+        if v is None or v and not re.search(regex, v, re.I):
+            raise ValueError("Phone Number Invalid.")
+        return v
+
+    class Config:
+        from_attributes = True
+
+
 class UserCreateSchema(BaseModel):
     password: str
     name: str
@@ -73,6 +89,7 @@ class UserCreateSchema(BaseModel):
         if v and not re.search(regex, v, re.I):
             raise ValueError("Phone Number Invalid.")
         return v
+
     class Config:
         from_attributes = True
 

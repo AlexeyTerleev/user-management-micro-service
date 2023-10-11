@@ -11,23 +11,17 @@ class GroupsService:
     async def get_group(self, name: str):
         group = await self.groups_repo.find_one({"name": name})
         return group
-    
+
     async def create_group(self, new_group: GroupRegisterSchema):
-        group = await self.groups_repo.create_one(
-            {
-                "name": new_group.name 
-            }
-        )
+        group = await self.groups_repo.create_one({"name": new_group.name})
         return group
-    
+
     async def get_or_create_group(self, name: str):
         group = await self.get_group(name)
         if group is None:
             group = await self.create_group(GroupRegisterSchema(name=name))
         return group
-    
+
     async def delete_group(self, id: UUID):
-        group = await self.groups_repo.delete(
-            {"id": id}
-        )
+        group = await self.groups_repo.delete({"id": id})
         return group
