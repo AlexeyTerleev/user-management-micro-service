@@ -1,13 +1,14 @@
+from datetime import datetime
+from uuid import UUID, uuid4
+
 from sqlalchemy import ForeignKey
 from sqlalchemy.orm import Mapped, mapped_column
-from sqlalchemy_utils import URLType
 from sqlalchemy.sql import func
-from uuid import UUID, uuid4
-from datetime import datetime
 
 from app.db.db import Base
+from app.schemas.users import UserDatabaseSchema
 from app.utils.roles import Role
-from app.schemas.users import UserSchema
+from sqlalchemy_utils import URLType
 
 
 class Users(Base):
@@ -29,8 +30,8 @@ class Users(Base):
         server_default=func.now(), onupdate=func.current_timestamp()
     )
 
-    def to_read_model(self) -> UserSchema:
-        return UserSchema(
+    def to_read_model(self) -> UserDatabaseSchema:
+        return UserDatabaseSchema(
             id=self.id,
             hashed_password=self.hashed_password,
             name=self.name,

@@ -1,6 +1,6 @@
 from abc import ABC, abstractmethod
 
-from sqlalchemy import insert, select, update, delete
+from sqlalchemy import delete, insert, select, update
 
 from app.db.db import async_session_maker
 
@@ -50,7 +50,7 @@ class SQLAlchemyRepository(AbstractRepository):
             stmt = insert(self.model).values(**values).returning(self.model)
             res = await session.execute(stmt)
             await session.commit()
-            return res.scalar_one()
+            return res.scalar_one().to_read_model()
         
     async def update_all(self, filter_by: dict, new_values: dict):
         async with async_session_maker() as session:
@@ -58,7 +58,7 @@ class SQLAlchemyRepository(AbstractRepository):
             print(str(stmt))
             updated_user = await session.execute(stmt)
             await session.commit()
-            return updated_user.scalar_one()
+            return updated_user.scalar_one().to_read_model()
 
     async def delete_all(self, filter_by: dict):
         async with async_session_maker() as session:
