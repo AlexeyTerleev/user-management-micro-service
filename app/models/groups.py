@@ -17,7 +17,5 @@ class Groups(Base):
 
     def to_read_model(self) -> GroupDatabaseSchema:
         return GroupDatabaseSchema(
-            id=self.id, 
-            name=self.name, 
-            created_at=self.created_at,
+            id=self.id, name=self.name, created_at=self.created_at,
         )

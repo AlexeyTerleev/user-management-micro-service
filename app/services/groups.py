@@ -11,7 +11,7 @@ class GroupsService:
     async def get_group_by_name(self, name: str) -> GroupDatabaseSchema:
         group = await self.groups_repo.find_one({"name": name})
         return group
-    
+
     async def get_group_by_id(self, id: UUID) -> GroupDatabaseSchema:
         group = await self.groups_repo.find_one({"id": id})
         return group

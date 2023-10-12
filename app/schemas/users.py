@@ -30,7 +30,6 @@ class UserSchema(BaseModel):
 class UserRegisterSchema(UserSchema):
     password: str
     group_name: str
-    
 
 
 class UserCreateSchema(UserSchema):

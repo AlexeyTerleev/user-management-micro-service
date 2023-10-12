@@ -2,12 +2,21 @@ import re
 from typing import Annotated
 
 from app.api.dependencies import groups_service, users_service
-from app.schemas.users import UserCreateSchema, UserRegisterSchema, UserOutSchema
 from app.schemas.groups import GroupOutSchema
+from app.schemas.users import (
+    TokenSchema,
+    UserCreateSchema,
+    UserOutSchema,
+    UserRegisterSchema,
+)
 from app.services.groups import GroupsService
 from app.services.users import UsersService
-from app.utils.auth import create_access_token, create_refresh_token, verify_password
-from app.utils.auth import get_hashed_password
+from app.utils.auth import (
+    create_access_token,
+    create_refresh_token,
+    get_hashed_password,
+    verify_password,
+)
 from fastapi import APIRouter, Depends, HTTPException
 from fastapi.security import OAuth2PasswordRequestForm
 from starlette import status
@@ -15,7 +24,7 @@ from starlette import status
 router = APIRouter(prefix="/auth", tags=["Authorization"],)
 
 
-@router.post("/singup")
+@router.post("/singup", response_model=UserOutSchema)
 async def auth_singup(
     new_user: UserRegisterSchema,
     users_service: Annotated[UsersService, Depends(users_service)],
@@ -40,14 +49,16 @@ async def auth_singup(
                 status_code=status.HTTP_400_BAD_REQUEST,
                 detail=f"User with email [{new_user.email}] is already exist",
             )
-        
+
         group = await groups_service.get_or_create_group(new_user.group_name)
 
         new_user_dict = new_user.dict()
-        new_user_dict["hashed_password"] = get_hashed_password(new_user_dict.pop("password"))
+        new_user_dict["hashed_password"] = get_hashed_password(
+            new_user_dict.pop("password")
+        )
         new_user_dict["img_path"] = str(new_user_dict["img_path"])
         new_user_dict["group_id"] = group.id
-        
+
         user = await users_service.create_user(UserCreateSchema(**new_user_dict))
 
         return UserOutSchema(group=GroupOutSchema(**group.dict()), **user.dict())
@@ -57,7 +68,7 @@ async def auth_singup(
         raise e
 
 
-@router.post("/login")
+@router.post("/login", response_model=TokenSchema)
 async def auth_login(
     users_service: Annotated[UsersService, Depends(users_service)],
     form_data: Annotated[OAuth2PasswordRequestForm, Depends()],
