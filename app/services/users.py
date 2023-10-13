@@ -3,11 +3,20 @@ from uuid import UUID
 from app.schemas.users import UserCreateSchema, UserUpgradeSchema
 from app.utils.auth import get_hashed_password
 from app.utils.repository import AbstractRepository
+import re
 
 
 class UsersService:
     def __init__(self, users_repo: AbstractRepository):
         self.users_repo: AbstractRepository = users_repo()
+
+    async def get_user_by_idtf(self, idtf):
+        if is_phone_number(idtf):
+            return await self.get_user_by_phone_number(idtf)
+        elif is_email(idtf):
+            return await self.get_user_by_email(idtf)
+        else:
+            return await self.get_user_by_username(idtf)
 
     async def get_user_by_id(self, id):
         user = await self.users_repo.find_one({"id": id})
@@ -37,3 +46,13 @@ class UsersService:
 
     async def delete_user_by_id(self, id: UUID):
         await self.users_repo.delete_all({"id": id})
+
+
+def is_phone_number(filter_value: str) -> bool:
+    regex = r"^(\+)[1-9][0-9\-\(\)\.]{9,15}$"
+    return bool(re.match(regex, filter_value))
+
+
+def is_email(filter_value: str) -> bool:
+    regex = r"^[^@]+@[^@]+\.[^@]+$"
+    return bool(re.match(regex, filter_value))
