@@ -3,11 +3,14 @@ from pydantic_settings import BaseSettings
 
 
 class DbSettings(BaseSettings):
-    postgres_user: str = Field("postgres", env="DB_USER")
-    postgres_pass: str = Field("postgres", env="DB_PASS")
-    postgres_port: str = Field("5432", env="DB_PORT")
-    postgres_host: str = Field("db", env="DB_HOST")
-    postgres_name: str = Field("postgres", env="DB_NAME")
+    user: str = Field("postgres", env="DB_USER")
+    password: str = Field("postgres", env="DB_PASS")
+    host: str = Field("db", env="DB_HOST")
+    port: str = Field("5432", env="DB_PORT")
+    name: str = Field("postgres", env="DB_NAME")
+
+    def get_url(self):
+        return  f"postgresql+asyncpg://{self.user}:{self.password}@{self.host}:{self.port}/{self.name}"
 
 
 class AuthSettings(BaseSettings):

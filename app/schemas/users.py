@@ -14,7 +14,7 @@ class UserSchema(BaseModel):
     phone_number: str
     email: EmailStr
     role: Role
-    img_path: HttpUrl
+    img_path: str
 
     @field_validator("phone_number")
     def phone_validation(cls, v):
@@ -30,7 +30,7 @@ class UserSchema(BaseModel):
 class UserRegisterSchema(UserSchema):
     password: str
     group_name: str
-
+    img_path: HttpUrl
 
 class UserCreateSchema(UserSchema):
     hashed_password: str
@@ -38,7 +38,7 @@ class UserCreateSchema(UserSchema):
     img_path: str
 
 
-class UserUpdateSchema(UserSchema):
+class UserUpdateSchema(BaseModel):
     name: str | None = None
     surname: str | None = None
     username: str | None = None
@@ -49,8 +49,15 @@ class UserUpdateSchema(UserSchema):
     password: str | None = None
     group_name: str | None = None
 
+    @field_validator("phone_number")
+    def phone_validation(cls, v):
+        regex = r"^(\+)[1-9][0-9\-\(\)\.]{9,15}$"
+        if v and not re.search(regex, v, re.I):
+            raise ValueError("Phone Number Invalid.")
+        return v
 
-class UserUpgradeSchema(UserUpdateSchema):
+
+class UserUpgradeSchema(BaseModel):
     name: str | None = None
     surname: str | None = None
     username: str | None = None
@@ -60,6 +67,13 @@ class UserUpgradeSchema(UserUpdateSchema):
     img_path: str | None = None
     hashed_password: str | None = None
     group_id: UUID | None = None
+
+    @field_validator("phone_number")
+    def phone_validation(cls, v):
+        regex = r"^(\+)[1-9][0-9\-\(\)\.]{9,15}$"
+        if v and not re.search(regex, v, re.I):
+            raise ValueError("Phone Number Invalid.")
+        return v
 
 
 class UserDatabaseSchema(UserSchema):
@@ -78,6 +92,12 @@ class UserOutSchema(UserSchema):
     blocked: bool
     created_at: datetime
     modified_at: datetime
+
+
+class UserIdtfsShema(BaseModel):
+    username: str | None = None
+    email: EmailStr | None = None
+    phone_number: str | None = None
 
 
 class TokenSchema(BaseModel):

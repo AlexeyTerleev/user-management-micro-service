@@ -6,6 +6,7 @@ from app.schemas.users import (
     UserRegisterSchema,
 )
 from app.services.auth import AuthService
+from app.services.users import UsersService
 from fastapi import APIRouter, Depends, HTTPException
 from fastapi.security import OAuth2PasswordRequestForm
 from starlette import status
@@ -21,10 +22,10 @@ async def auth_singup(
     try:
         user = await auth_service.singup(new_user)
         return user
-    except AuthService.DataIsUsedException as e:
+    except UsersService.UserExistsException as e:
         raise HTTPException(
                 status_code=status.HTTP_400_BAD_REQUEST, 
-                detail=f"This {e.data_type} is already used"
+                detail=f"{e.idtf} [{e.value}] is already used"
             )
     except HTTPException as e:
         raise e
@@ -40,10 +41,10 @@ async def auth_login(
     try:
         tokens = await auth_service.login(form_data)
         return tokens
-    except AuthService.UserNotFoundException as e:
+    except UsersService.UserNotFoundException as e:
         raise HTTPException(
                 status_code=status.HTTP_400_BAD_REQUEST, 
-                detail=f"User with [{e.username}] not found"
+                detail=f"User with {e.idtf} [{e.value}] not found"
             )
     except AuthService.IncorrectPasswordException as e:
         raise HTTPException(
