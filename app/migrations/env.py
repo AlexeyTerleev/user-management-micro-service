@@ -1,28 +1,26 @@
-from logging.config import fileConfig
-
-from sqlalchemy import engine_from_config
-from sqlalchemy import pool
-
-from alembic import context
-
 import os
 import sys
+from logging.config import fileConfig
 
-sys.path.append(os.path.join(sys.path[0], "app"))
+from alembic import context
+from sqlalchemy import engine_from_config, pool
 
-from app.config import DB_HOST, DB_PASS, DB_PORT, DB_USER, DB_NAME
+from app.config import settings
 from app.db.db import Base
+
+# sys.path.append(os.path.join(sys.path[0], "app"))
+
 
 # this is the Alembic Config object, which provides
 # access to the values within the .ini file in use.
 config = context.config
 
 section = config.config_ini_section
-config.set_section_option(section, "DB_HOST", DB_HOST)
-config.set_section_option(section, "DB_PASS", DB_PASS)
-config.set_section_option(section, "DB_PORT", DB_PORT)
-config.set_section_option(section, "DB_USER", DB_USER)
-config.set_section_option(section, "DB_NAME", DB_NAME)
+config.set_section_option(section, "DB_USER", settings.db.user)
+config.set_section_option(section, "DB_PASS", settings.db.password)
+config.set_section_option(section, "DB_HOST", settings.db.host)
+config.set_section_option(section, "DB_PORT", settings.db.port)
+config.set_section_option(section, "DB_NAME", settings.db.name)
 
 # Interpret the config file for Python logging.
 # This line sets up loggers basically.
@@ -79,9 +77,7 @@ def run_migrations_online() -> None:
     )
 
     with connectable.connect() as connection:
-        context.configure(
-            connection=connection, target_metadata=target_metadata
-        )
+        context.configure(connection=connection, target_metadata=target_metadata)
 
         with context.begin_transaction():
             context.run_migrations()
