@@ -1,9 +1,14 @@
 from uuid import UUID
+from typing import List
 
 from app.schemas.users import UserRegisterSchema, UserCreateSchema, UserUpdateSchema, UserUpgradeSchema, UserIdtfsShema, UserOutSchema
 from app.utils.auth import get_hashed_password
 from app.utils.repository import AbstractRepository
+from app.models.groups import Groups
+
+from sqlalchemy import desc, asc
 import re
+
 
 
 class UsersService:
@@ -114,3 +119,22 @@ class UsersService:
 
     async def delete_user_by_id(self, id: UUID):
         await self.users_repo.delete_all({"id": id})
+
+    async def get_users_with_groups(self, name: str = None, surname: str = None, order_str: str = None, order_by: str = None, group: str = None):
+        filter_by = {}
+        if name:
+            filter_by["users.name"]= name
+        if surname:
+            filter_by["users.surname"] = surname
+        if group:
+            filter_by["groups.name"] = group
+
+        if order_str and order_str == "desc":
+            order = desc
+        else:
+            order = asc
+
+        users = await self.users_repo.find_all_with_join(Groups, filter_by, order, order_by)
+        return users
+
+        

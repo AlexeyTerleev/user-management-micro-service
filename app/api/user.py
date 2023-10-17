@@ -9,6 +9,7 @@ from app.schemas.users import (
 from app.services.groups import GroupsService
 from app.services.users import UsersService
 from app.utils.oauth_bearer import get_current_unblocked_user
+from app.utils.roles import Role
 from fastapi import APIRouter, Depends, HTTPException
 from starlette import status
 
@@ -55,5 +56,27 @@ async def me_delete(
 ):
     try:
         await users_service.delete_user_by_id(user.id)
+    except Exception as e:
+        raise e
+    
+
+@router.get("s")
+async def users_get(
+    user: Annotated[UserOutSchema, Depends(get_current_unblocked_user)],
+    users_service: Annotated[UsersService, Depends(users_service)],
+    name: str = None, surname: str = None, order: str = None, order_by: str = None
+):
+    try:
+        if user.role == Role.admin:
+            group = None
+        elif user.role == Role.moderator:
+            group = user.group.name
+        else:
+            raise HTTPException(
+                status_code=status.HTTP_403_FORBIDDEN, 
+                detail=f"Permission denied",
+            )
+        users = await users_service.get_users_with_groups(name=name, surname=surname, order_str=order, order_by=order_by, group=group)
+        return users
     except Exception as e:
         raise e

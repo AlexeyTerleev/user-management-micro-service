@@ -1,7 +1,8 @@
 from datetime import datetime
 from uuid import UUID, uuid4
+from typing import List
 
-from sqlalchemy.orm import Mapped, mapped_column
+from sqlalchemy.orm import Mapped, mapped_column, relationship
 from sqlalchemy.sql import func
 
 from app.db.db import Base
@@ -14,6 +15,8 @@ class Groups(Base):
     id: Mapped[UUID] = mapped_column(primary_key=True, default=uuid4)
     name: Mapped[str]
     created_at: Mapped[datetime] = mapped_column(server_default=func.now())
+
+    user: Mapped[List["Users"]] = relationship()
 
     def to_read_model(self) -> GroupDatabaseSchema:
         return GroupDatabaseSchema(

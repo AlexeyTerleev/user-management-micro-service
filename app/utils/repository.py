@@ -1,4 +1,5 @@
 from abc import ABC, abstractmethod
+from typing import List
 
 from sqlalchemy import delete, insert, select, update
 
@@ -71,3 +72,14 @@ class SQLAlchemyRepository(AbstractRepository):
             await session.execute(stmt)
             await session.commit()
             return None
+        
+    
+    async def find_all_with_join(self, join_model, filter_by: dict, order, order_by: List[str]):
+        async with async_session_maker() as session:
+            if order_by:
+                stmt = select(self.model).join(join_model).filter(**filter_by).order_by(order(order_by))
+            else:
+                stmt = select(self.model).join(join_model).filter(**filter_by)
+            res = await session.execute(stmt)
+            res = [row[0] for row in res.all()]
+            return res
