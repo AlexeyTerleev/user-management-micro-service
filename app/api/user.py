@@ -34,6 +34,9 @@ async def me_patch(
     try:
         updated_group = await groups_service.update_group(user.group, new_values.group_name)
         updated_user = await users_service.update_user(user, new_values, updated_group)
+        group = await groups_service.get_group_by_id(user.group.id)
+        if not group.users:
+            await groups_service.delete_group(group.id)
         return updated_user
     except UsersService.UserExistsException as e:
         raise HTTPException(
@@ -91,9 +94,9 @@ async def users_get(
 
 @router.get("/", response_model=UserOutSchema)
 async def users_get(
+    user_id: UUID,
     user: Annotated[UserOutSchema, Depends(get_current_unblocked_user)],
     users_service: Annotated[UsersService, Depends(users_service)],
-    user_id: UUID,
 ):
     try:
         aim_user = await users_service.get_user_by_id(user_id)
@@ -103,5 +106,46 @@ async def users_get(
                 detail=f"Permission denied",
             )
         return aim_user
+    except UsersService.UserNotFoundException as e:
+        raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST, 
+                detail=f"User with id: [{user_id}] not found"
+            )
+    
+    except Exception as e:
+        raise e
+    
+
+@router.patch("/", response_model=UserOutSchema)
+async def users_get(
+    user_id: UUID,
+    new_values: UserUpdateSchema,
+    user: Annotated[UserOutSchema, Depends(get_current_unblocked_user)],
+    users_service: Annotated[UsersService, Depends(users_service)],
+    groups_service: Annotated[GroupsService, Depends(groups_service)],
+):
+    try:
+        if user.role != Role.admin:
+            raise HTTPException(
+                status_code=status.HTTP_403_FORBIDDEN, 
+                detail=f"Permission denied",
+            )
+        aim_user = await users_service.get_user_by_id(user_id)
+        updated_group = await groups_service.update_group(aim_user.group, new_values.group_name)
+        updated_user = await users_service.update_user(aim_user, new_values, updated_group)
+        group = await groups_service.get_group_by_id(user.group.id)
+        if not group.users:
+            await groups_service.delete_group(group.id)
+        return updated_user
+    except UsersService.UserExistsException as e:
+        raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST, 
+                detail=f"{e.idtf} [{e.value}] is already used"
+            )
+    except UsersService.NothingToUpdateException:
+        raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST, 
+                detail=f"No changes avalible"
+            )
     except Exception as e:
         raise e
