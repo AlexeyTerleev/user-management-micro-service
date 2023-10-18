@@ -120,21 +120,11 @@ class UsersService:
     async def delete_user_by_id(self, id: UUID):
         await self.users_repo.delete_all({"id": id})
 
-    async def get_users_with_groups(self, name: str = None, surname: str = None, order_str: str = None, order_by: str = None, group: str = None):
-        filter_by = {}
-        if name:
-            filter_by["name"] = name
-        if surname:
-            filter_by["surname"] = surname
-        if group:
-            filter_by["group_id"] = group
-
-        if order_str and order_str == "desc":
-            order = desc
-        else:
-            order = asc
-
-        users = await self.users_repo.find_all(filter_by)
+    async def get_users(self, filter_by_name: str = None, filter_by_surname: str = None, filter_by_group_id: str = None, sorted_by: str = None, order_by: str = None):
+        filter_by = {"name": filter_by_name, "surname": filter_by_surname, "group_id": filter_by_group_id}
+        filter_by = {key : value for key, value in filter_by.items() if value}
+        order_func = desc if order_by and order_by == "desc" else asc
+        users = await self.users_repo.find_all(filter_by, sorted_by, order_func)
         return users
 
 # filter_by make or statement (name or surname) + sort_by (field) + order_by (asc / desc)

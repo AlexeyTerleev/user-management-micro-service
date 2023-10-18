@@ -1,8 +1,7 @@
-from typing import Annotated
+from typing import Annotated, List
 
 from app.api.dependencies import groups_service, users_service
 from app.schemas.users import (
-    GroupOutSchema,
     UserOutSchema,
     UserUpdateSchema,
 )
@@ -53,6 +52,7 @@ async def me_patch(
 async def me_delete(
     user: Annotated[UserOutSchema, Depends(get_current_unblocked_user)],
     users_service: Annotated[UsersService, Depends(users_service)],
+    groups_service: Annotated[GroupsService, Depends(groups_service)],
 ):
     try:
         await users_service.delete_user_by_id(user.id)
@@ -60,23 +60,26 @@ async def me_delete(
         raise e
     
 
-@router.get("s")
+@router.get("s", response_model=List[UserOutSchema])
 async def users_get(
     user: Annotated[UserOutSchema, Depends(get_current_unblocked_user)],
     users_service: Annotated[UsersService, Depends(users_service)],
-    name: str = None, surname: str = None, order: str = None, order_by: str = None
+    filter_by_name: str = None, filter_by_surname: str = None, 
+    sotred_by: str = None, order_by: str = None
 ):
     try:
         if user.role == Role.admin:
-            group = None
+            group_id = None
         elif user.role == Role.moderator:
-            group = user.group.id  
+            group_id = user.group.id  
         else:
             raise HTTPException(
                 status_code=status.HTTP_403_FORBIDDEN, 
                 detail=f"Permission denied",
             )
-        users = await users_service.get_users_with_groups(name=name, surname=surname, order_str=order, order_by=order_by, group=group)
+        users = await users_service.get_users(
+            filter_by_name, filter_by_surname, group_id, sotred_by, order_by,
+        )
         return users
     except Exception as e:
         raise e

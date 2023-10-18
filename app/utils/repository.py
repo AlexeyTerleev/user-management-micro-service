@@ -1,7 +1,7 @@
 from abc import ABC, abstractmethod
-from typing import List
+from typing import List, Callable
 
-from sqlalchemy import delete, insert, select, update
+from sqlalchemy import delete, insert, select, update, asc
 
 from app.db.db import async_session_maker
 
@@ -32,9 +32,11 @@ class SQLAlchemyRepository(AbstractRepository):
 
     model = None
 
-    async def find_all(self, filter_by: dict):
+    async def find_all(self, filter_by: dict, sorted_by: str = None, order_func: Callable = asc):
         async with async_session_maker() as session:
             stmt = select(self.model).filter_by(**filter_by)
+            if sorted_by:
+                stmt = stmt.order_by(order_func(sorted_by))
             res = await session.execute(stmt)
             res = [row[0].to_read_model() for row in res.all()]
             return res
