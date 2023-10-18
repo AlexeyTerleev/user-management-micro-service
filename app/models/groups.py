@@ -15,10 +15,12 @@ class Groups(Base):
     id: Mapped[UUID] = mapped_column(primary_key=True, default=uuid4)
     name: Mapped[str]
     created_at: Mapped[datetime] = mapped_column(server_default=func.now())
-
-    users: Mapped[List["Users"]] = relationship(back_populates="group",  lazy='selectin')
+    users: Mapped[List["Users"]] = relationship(back_populates="group",  lazy="joined")
 
     def to_read_model(self) -> GroupDatabaseSchema:
         return GroupDatabaseSchema(
-            id=self.id, name=self.name, created_at=self.created_at,
+            id=self.id, 
+            name=self.name, 
+            users=[user.to_db_model() for user in self.users],
+            created_at=self.created_at,
         )

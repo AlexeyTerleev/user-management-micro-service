@@ -6,7 +6,7 @@ from sqlalchemy.orm import Mapped, mapped_column, relationship
 from sqlalchemy.sql import func
 
 from app.db.db import Base
-from app.schemas.users import UserOutSchema
+from app.schemas.users import UserOutSchema, UserDatabaseSchema
 from app.utils.roles import Role
 from sqlalchemy_utils import URLType
 
@@ -29,7 +29,7 @@ class Users(Base):
     modified_at: Mapped[datetime] = mapped_column(
         server_default=func.now(), onupdate=func.current_timestamp()
     )
-    group: Mapped["Groups"] = relationship(back_populates="users", lazy='selectin')
+    group: Mapped["Groups"] = relationship(back_populates="users", lazy="selectin")
 
     def to_read_model(self) -> UserOutSchema:
         return UserOutSchema(
@@ -42,6 +42,23 @@ class Users(Base):
             email=self.email,
             role=self.role,
             group=self.group.to_read_model(),
+            img_path=self.img_path,
+            blocked=self.blocked,
+            created_at=self.created_at,
+            modified_at=self.modified_at,
+        )
+    
+    def to_db_model(self) -> UserDatabaseSchema:
+        return UserDatabaseSchema(
+            id=self.id,
+            hashed_password=self.hashed_password,
+            name=self.name,
+            surname=self.surname,
+            username=self.username,
+            phone_number=self.phone_number,
+            email=self.email,
+            role=self.role,
+            group_id=self.group_id,
             img_path=self.img_path,
             blocked=self.blocked,
             created_at=self.created_at,

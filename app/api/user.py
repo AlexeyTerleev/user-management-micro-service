@@ -56,6 +56,9 @@ async def me_delete(
 ):
     try:
         await users_service.delete_user_by_id(user.id)
+        group = await groups_service.get_group_by_id(user.group.id)
+        if not group.users:
+            await groups_service.delete_group(group.id)
     except Exception as e:
         raise e
     

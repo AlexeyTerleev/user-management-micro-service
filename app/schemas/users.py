@@ -2,7 +2,7 @@ import re
 from datetime import datetime
 from uuid import UUID
 
-from app.schemas.groups import GroupOutSchema
+import app.schemas.groups as groups_schemas
 from app.utils.roles import Role
 from pydantic import BaseModel, EmailStr, HttpUrl, field_validator
 
@@ -87,7 +87,7 @@ class UserDatabaseSchema(UserSchema):
 
 class UserOutSchema(UserSchema):
     id: UUID
-    group: GroupOutSchema
+    group: groups_schemas.GroupOutSchema
     hashed_password: str
     blocked: bool
     created_at: datetime

@@ -19,7 +19,7 @@ class AuthService:
     async def singup(self, new_user: UserRegisterSchema) -> UserOutSchema:
         group = await self.groups_service.get_or_create_group(new_user.group_name)
         user = await self.users_service.create_user(new_user, group.id)
-        return UserOutSchema(group=GroupOutSchema(**group.dict()), **user.dict())
+        return user
     
     async def login(self, form_data):
         user = await self.users_service.get_user_by_idtf(form_data.username)
