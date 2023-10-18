@@ -1,4 +1,5 @@
 from typing import Annotated, List
+from uuid import UUID
 
 from app.api.dependencies import groups_service, users_service
 from app.schemas.users import (
@@ -84,5 +85,23 @@ async def users_get(
             filter_by_name, filter_by_surname, group_id, sotred_by, order_by,
         )
         return users
+    except Exception as e:
+        raise e
+    
+
+@router.get("/", response_model=UserOutSchema)
+async def users_get(
+    user: Annotated[UserOutSchema, Depends(get_current_unblocked_user)],
+    users_service: Annotated[UsersService, Depends(users_service)],
+    user_id: UUID,
+):
+    try:
+        aim_user = await users_service.get_user_by_id(user_id)
+        if user.role == Role.user or (user.role == Role.moderator and user.group.id != aim_user.group.id):
+            raise HTTPException(
+                status_code=status.HTTP_403_FORBIDDEN, 
+                detail=f"Permission denied",
+            )
+        return aim_user
     except Exception as e:
         raise e
