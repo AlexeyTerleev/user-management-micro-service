@@ -16,7 +16,7 @@ class Groups(Base):
     name: Mapped[str]
     created_at: Mapped[datetime] = mapped_column(server_default=func.now())
 
-    user: Mapped[List["Users"]] = relationship()
+    users: Mapped[List["Users"]] = relationship(back_populates="group",  lazy='selectin')
 
     def to_read_model(self) -> GroupDatabaseSchema:
         return GroupDatabaseSchema(

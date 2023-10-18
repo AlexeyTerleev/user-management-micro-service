@@ -123,18 +123,19 @@ class UsersService:
     async def get_users_with_groups(self, name: str = None, surname: str = None, order_str: str = None, order_by: str = None, group: str = None):
         filter_by = {}
         if name:
-            filter_by["users.name"]= name
+            filter_by["name"] = name
         if surname:
-            filter_by["users.surname"] = surname
+            filter_by["surname"] = surname
         if group:
-            filter_by["groups.name"] = group
+            filter_by["group_id"] = group
 
         if order_str and order_str == "desc":
             order = desc
         else:
             order = asc
 
-        users = await self.users_repo.find_all_with_join(Groups, filter_by, order, order_by)
+        users = await self.users_repo.find_all(filter_by)
         return users
 
+# filter_by make or statement (name or surname) + sort_by (field) + order_by (asc / desc)
         

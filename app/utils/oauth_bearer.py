@@ -3,11 +3,9 @@ from typing import Annotated
 
 import jwt
 
-from app.api.dependencies import groups_service, users_service
+from app.api.dependencies import users_service
 from app.config import settings
-from app.schemas.groups import GroupOutSchema
 from app.schemas.users import TokenPayload, UserOutSchema
-from app.services.groups import GroupsService
 from app.services.users import UsersService
 from fastapi import Depends, HTTPException, status
 from fastapi.security import OAuth2PasswordBearer
@@ -18,7 +16,6 @@ reuseable_oauth = OAuth2PasswordBearer(tokenUrl="./auth/login", scheme_name="JWT
 
 async def get_current_user(
     users_service: Annotated[UsersService, Depends(users_service)],
-    groups_service: Annotated[GroupsService, Depends(groups_service)],
     token: Annotated[str, Depends(reuseable_oauth)],
 ) -> UserOutSchema:
     try:
@@ -41,8 +38,7 @@ async def get_current_user(
         )
     try:
         user = await users_service.get_user_by_id(token_data.sub)
-        group = await groups_service.get_group_by_id(user.group_id)
-        user_out = UserOutSchema(group=GroupOutSchema(**group.dict()), **user.dict())
+        user_out = user
     except Exception as e:
         raise e
     return user_out

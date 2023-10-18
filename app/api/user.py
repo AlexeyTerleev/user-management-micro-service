@@ -34,7 +34,7 @@ async def me_patch(
     try:
         updated_group = await groups_service.update_group(user.group, new_values.group_name)
         updated_user = await users_service.update_user(user, new_values, updated_group)
-        return UserOutSchema(group=GroupOutSchema(**updated_group.dict()), **updated_user.dict())
+        return updated_user
     except UsersService.UserExistsException as e:
         raise HTTPException(
                 status_code=status.HTTP_400_BAD_REQUEST, 
@@ -70,7 +70,7 @@ async def users_get(
         if user.role == Role.admin:
             group = None
         elif user.role == Role.moderator:
-            group = user.group.name
+            group = user.group.id  
         else:
             raise HTTPException(
                 status_code=status.HTTP_403_FORBIDDEN, 

@@ -61,10 +61,10 @@ class SQLAlchemyRepository(AbstractRepository):
                 .values(**new_values)
                 .returning(self.model)
             )
-            print(str(stmt))
             updated_user = await session.execute(stmt)
             await session.commit()
-            return updated_user.scalar_one().to_read_model()
+            updated_user = updated_user.unique().scalar_one()
+            return updated_user.to_read_model()
 
     async def delete_all(self, filter_by: dict):
         async with async_session_maker() as session:
@@ -72,14 +72,4 @@ class SQLAlchemyRepository(AbstractRepository):
             await session.execute(stmt)
             await session.commit()
             return None
-        
     
-    async def find_all_with_join(self, join_model, filter_by: dict, order, order_by: List[str]):
-        async with async_session_maker() as session:
-            if order_by:
-                stmt = select(self.model).join(join_model).filter(**filter_by).order_by(order(order_by))
-            else:
-                stmt = select(self.model).join(join_model).filter(**filter_by)
-            res = await session.execute(stmt)
-            res = [row[0] for row in res.all()]
-            return res
