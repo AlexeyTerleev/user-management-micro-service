@@ -149,3 +149,6 @@ async def users_get(
             )
     except Exception as e:
         raise e
+    
+# bug not working singup (creates user but throw exception)
+# export logic of deletion group if the group is empty

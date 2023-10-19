@@ -7,9 +7,12 @@ from app.schemas.users import (
 )
 from app.services.auth import AuthService
 from app.services.users import UsersService
+from app.utils.oauth_bearer import get_current_unblocked_user
 from fastapi import APIRouter, Depends, HTTPException
 from fastapi.security import OAuth2PasswordRequestForm
 from starlette import status
+from pydantic import EmailStr
+
 
 router = APIRouter(prefix="/auth", tags=["Authorization"],)
 
@@ -51,6 +54,32 @@ async def auth_login(
                 status_code=status.HTTP_400_BAD_REQUEST, 
                 detail=f"Incorrect password"
             )
+    except HTTPException as e:
+        raise e
+    except Exception as e:
+        raise e
+    
+
+@router.post("/refresh-token", response_model=TokenSchema)
+async def auth_refresh_token(
+    user: Annotated[UserOutSchema, Depends(get_current_unblocked_user)],
+    auth_service: Annotated[AuthService, Depends(auth_service)],
+):
+    try:
+        return None
+    except HTTPException as e:
+        raise e
+    except Exception as e:
+        raise e
+
+
+@router.post("/reset-password", response_model=TokenSchema)
+async def auth_reset_password(
+    email: EmailStr,
+    auth_service: Annotated[AuthService, Depends(auth_service)],
+):
+    try:
+        return None
     except HTTPException as e:
         raise e
     except Exception as e:

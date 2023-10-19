@@ -21,6 +21,6 @@ class Groups(Base):
         return GroupDatabaseSchema(
             id=self.id, 
             name=self.name, 
-            users=[user.to_db_model() for user in self.users],
+            users=self.users,
             created_at=self.created_at,
         )

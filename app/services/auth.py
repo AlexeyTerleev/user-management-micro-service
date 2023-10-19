@@ -6,7 +6,6 @@ from app.utils.auth import verify_password, create_access_token, create_refresh_
 
 
 
-
 class AuthService:
     
     class IncorrectPasswordException(Exception):
@@ -29,3 +28,16 @@ class AuthService:
             "access_token": create_access_token(user.id),
             "refresh_token": create_refresh_token(user.id),
         }
+
+
+# {
+#   "name": "name",
+#   "surname": "surname",
+#   "username": "username",
+#   "phone_number": "+375299292242",
+#   "email": "user@example.com",
+#   "role": "USER",
+#   "img_path": "https://example.com/",
+#   "password": "password",
+#   "group_name": "string"
+# }

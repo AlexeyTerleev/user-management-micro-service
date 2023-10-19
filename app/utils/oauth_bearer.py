@@ -38,10 +38,9 @@ async def get_current_user(
         )
     try:
         user = await users_service.get_user_by_id(token_data.sub)
-        user_out = user
     except Exception as e:
         raise e
-    return user_out
+    return user
 
 
 async def get_current_unblocked_user(
