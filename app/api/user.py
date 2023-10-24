@@ -68,6 +68,7 @@ async def me_delete(
 async def users_get(
     user: Annotated[UserOutSchema, Depends(get_current_unblocked_user)],
     users_service: Annotated[UsersService, Depends(users_service)],
+    page: int = None, limit: int = None,
     filter_by_name: str = None, filter_by_surname: str = None, 
     sotred_by: str = None, order_by: str = None
 ):
@@ -82,7 +83,9 @@ async def users_get(
                 detail=f"Permission denied",
             )
         users = await users_service.get_users(
-            filter_by_name, filter_by_surname, group_id, sotred_by, order_by,
+            page=page, limit=limit, 
+            filter_by_name=filter_by_name, filter_by_surname=filter_by_surname, 
+            filter_by_group_id=group_id, sorted_by=sotred_by, order_by=order_by,
         )
         return users
     except Exception as e:

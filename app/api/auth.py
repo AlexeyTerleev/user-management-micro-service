@@ -97,6 +97,3 @@ async def auth_reset_password(
         raise e
     except Exception as e:
         raise e
-
-
-# eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE2OTg3NDE2NDIsInN1YiI6IjdlMzE4MmQ5LTM2NDEtNDk4ZC04OGY5LTkxYWQ4MDg2YzkyYyJ9.Dl2AhQi1icgdaW-JUo6O2wWCW47Ghrk9teG23MoV0BQ

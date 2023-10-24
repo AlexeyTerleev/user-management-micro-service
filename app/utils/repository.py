@@ -43,11 +43,15 @@ class SQLAlchemyRepository(AbstractDBRepository):
 
     model = None
 
-    async def find_all(self, filter_by: dict, sorted_by: str = None, order_func: Callable = asc):
+    async def find_all(self, filter_by: dict, sorted_by: str = None, order_func: Callable = asc, limit: int = None, offset: int = None):
         async with db_async_session_maker() as session:
             stmt = select(self.model).filter_by(**filter_by)
             if sorted_by:
                 stmt = stmt.order_by(order_func(sorted_by))
+            if limit:
+                stmt = stmt.limit(limit)
+            if offset:
+                stmt = stmt.offset(offset)
             res = await session.execute(stmt)
             res = [row[0].to_read_model() for row in res.all()]
             return res
