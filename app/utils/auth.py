@@ -2,9 +2,9 @@ from datetime import datetime, timedelta
 from typing import Any, Union
 
 import jwt
+from passlib.context import CryptContext
 
 from app.config import settings
-from passlib.context import CryptContext
 
 password_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 

@@ -16,7 +16,7 @@ class DbSettings(BaseSettings):
     name: str = Field("postgres", env="DB_NAME")
 
     def get_url(self):
-        return  f"postgresql+asyncpg://{self.user}:{self.password}@{self.host}:{self.port}/{self.name}"
+        return f"postgresql+asyncpg://{self.user}:{self.password}@{self.host}:{self.port}/{self.name}"
 
 
 class AuthSettings(BaseSettings):

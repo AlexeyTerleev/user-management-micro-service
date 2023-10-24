@@ -4,11 +4,11 @@ from uuid import UUID, uuid4
 from sqlalchemy import ForeignKey
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 from sqlalchemy.sql import func
+from sqlalchemy_utils import URLType
 
 from app.db.db import Base
-from app.schemas.users import UserOutSchema, UserDatabaseSchema
+from app.schemas.users import UserDatabaseSchema, UserOutSchema
 from app.utils.roles import Role
-from sqlalchemy_utils import URLType
 
 
 class Users(Base):
@@ -47,7 +47,7 @@ class Users(Base):
             created_at=self.created_at,
             modified_at=self.modified_at,
         )
-    
+
     def to_db_model(self) -> UserDatabaseSchema:
         return UserDatabaseSchema(
             id=self.id,

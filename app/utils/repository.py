@@ -1,10 +1,13 @@
 from abc import ABC, abstractmethod
-from typing import List, Callable
+from typing import Callable
 
-from sqlalchemy import delete, insert, select, update, asc
+from sqlalchemy import asc, delete, insert, select, update
 
-from app.db.db import db_async_session_maker
-from app.cache_storage.cache_storage import async_session_maker as cache_async_session_maker
+from app.cache_storage.cache_storage import (
+    async_session_maker as cache_async_session_maker,
+)
+from app.db.db import async_session_maker as db_async_session_maker
+
 
 class AbstractDBRepository(ABC):
     @abstractmethod
@@ -26,24 +29,19 @@ class AbstractDBRepository(ABC):
     @abstractmethod
     async def delete_all():
         raise NotImplementedError
-    
-
-class AbstractCacheRepository(ABC):
-
-    @abstractmethod
-    async def sismember():
-        raise NotImplementedError
-
-    @abstractmethod
-    async def sadd():
-        raise NotImplementedError
 
 
 class SQLAlchemyRepository(AbstractDBRepository):
-
     model = None
 
-    async def find_all(self, filter_by: dict, sorted_by: str = None, order_func: Callable = asc, limit: int = None, offset: int = None):
+    async def find_all(
+        self,
+        filter_by: dict,
+        sorted_by: str = None,
+        order_func: Callable = asc,
+        limit: int = None,
+        offset: int = None,
+    ):
         async with db_async_session_maker() as session:
             stmt = select(self.model).filter_by(**filter_by)
             if sorted_by:
@@ -89,7 +87,17 @@ class SQLAlchemyRepository(AbstractDBRepository):
             await session.execute(stmt)
             await session.commit()
             return None
-    
+
+
+class AbstractCacheRepository(ABC):
+    @abstractmethod
+    async def sismember():
+        raise NotImplementedError
+
+    @abstractmethod
+    async def sadd():
+        raise NotImplementedError
+
 
 class RedisRepository(AbstractCacheRepository):
     async def sismember(self, key, member):

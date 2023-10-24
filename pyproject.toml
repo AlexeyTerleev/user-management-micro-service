@@ -39,6 +39,7 @@ src_paths = ["./app/"]
 [tool.black]
 line_length = 88
 src_paths = ["app"]
+--exclude = "app/migrations"
 
 [build-system]
 requires = ["poetry-core"]

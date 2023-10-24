@@ -2,9 +2,10 @@ import re
 from datetime import datetime
 from uuid import UUID
 
+from pydantic import BaseModel, EmailStr, HttpUrl, field_validator
+
 import app.schemas.groups as groups_schemas
 from app.utils.roles import Role
-from pydantic import BaseModel, EmailStr, HttpUrl, field_validator
 
 
 class UserSchema(BaseModel):
@@ -31,6 +32,7 @@ class UserRegisterSchema(UserSchema):
     password: str
     group_name: str
     img_path: HttpUrl
+
 
 class UserCreateSchema(UserSchema):
     hashed_password: str

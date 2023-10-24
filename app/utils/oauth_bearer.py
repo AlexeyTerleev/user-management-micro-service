@@ -2,17 +2,16 @@ from datetime import datetime
 from typing import Annotated
 
 import jwt
+from fastapi import Depends, HTTPException, status
+from fastapi.security import OAuth2AuthorizationCodeBearer, OAuth2PasswordBearer
+from pydantic import ValidationError
 
 from app.api.dependencies import users_service
 from app.config import settings
 from app.schemas.users import TokenPayload, UserOutSchema
 from app.services.users import UsersService
-from fastapi import Depends, HTTPException, status
-from fastapi.security import OAuth2PasswordBearer, OAuth2AuthorizationCodeBearer
-from pydantic import ValidationError
 
 reuseable_oauth = OAuth2PasswordBearer(tokenUrl="./auth/login", scheme_name="JWT")
-refresh_oauth = OAuth2AuthorizationCodeBearer(authorizationUrl="./auth/login", tokenUrl="./auth/refresh-token", refreshUrl="./auth/refresh-token", scheme_name="JWT")
 
 
 async def get_current_user(
