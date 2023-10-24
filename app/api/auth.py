@@ -5,6 +5,7 @@ from app.schemas.users import (
     UserOutSchema,
     UserRegisterSchema,
 )
+from app.utils.oauth_bearer import refresh_oauth
 from app.services.auth import AuthService
 from app.services.users import UsersService
 from app.utils.oauth_bearer import get_current_unblocked_user
@@ -12,6 +13,7 @@ from fastapi import APIRouter, Depends, HTTPException
 from fastapi.security import OAuth2PasswordRequestForm
 from starlette import status
 from pydantic import EmailStr
+import jwt
 
 
 router = APIRouter(prefix="/auth", tags=["Authorization"],)
@@ -62,13 +64,24 @@ async def auth_login(
 
 @router.post("/refresh-token", response_model=TokenSchema)
 async def auth_refresh_token(
-    user: Annotated[UserOutSchema, Depends(get_current_unblocked_user)],
+    refresh_token: str,
     auth_service: Annotated[AuthService, Depends(auth_service)],
 ):
     try:
-        return None
-    except HTTPException as e:
-        raise e
+        tokens = await auth_service.refresh_tokens(refresh_token)
+        return tokens
+    except jwt.exceptions.DecodeError as e:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Could not validate credentials",
+            headers={"WWW-Authenticate": "Bearer"},
+        )
+    except jwt.ExpiredSignatureError as e:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Token expired",
+            headers={"WWW-Authenticate": "Bearer"},
+        )
     except Exception as e:
         raise e
 
@@ -84,3 +97,6 @@ async def auth_reset_password(
         raise e
     except Exception as e:
         raise e
+
+
+# eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE2OTg3NDE2NDIsInN1YiI6IjdlMzE4MmQ5LTM2NDEtNDk4ZC04OGY5LTkxYWQ4MDg2YzkyYyJ9.Dl2AhQi1icgdaW-JUo6O2wWCW47Ghrk9teG23MoV0BQ

@@ -3,7 +3,7 @@ from typing import List
 
 from app.schemas.users import UserRegisterSchema, UserCreateSchema, UserUpdateSchema, UserUpgradeSchema, UserIdtfsShema, UserOutSchema
 from app.utils.auth import get_hashed_password
-from app.utils.repository import AbstractRepository
+from app.utils.repository import AbstractDBRepository
 from app.models.groups import Groups
 
 from sqlalchemy import desc, asc
@@ -28,8 +28,8 @@ class UsersService:
     class NothingToUpdateException(Exception):
         ...
 
-    def __init__(self, users_repo: AbstractRepository):
-        self.users_repo: AbstractRepository = users_repo()
+    def __init__(self, users_repo: AbstractDBRepository):
+        self.users_repo: AbstractDBRepository = users_repo()
 
     async def get_user_by_idtf(self, idtf):
         if await self.__is_phone_number(idtf):

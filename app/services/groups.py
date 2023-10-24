@@ -1,12 +1,12 @@
 from uuid import UUID
 
 from app.schemas.groups import GroupCreateSchema, GroupDatabaseSchema, GroupOutSchema
-from app.utils.repository import AbstractRepository
+from app.utils.repository import AbstractDBRepository
 
 
 class GroupsService:
-    def __init__(self, groups_repo: AbstractRepository):
-        self.groups_repo: AbstractRepository = groups_repo()
+    def __init__(self, groups_repo: AbstractDBRepository):
+        self.groups_repo: AbstractDBRepository = groups_repo()
 
     async def get_group_by_name(self, name: str) -> GroupDatabaseSchema:
         group = await self.groups_repo.find_one({"name": name})
@@ -33,6 +33,12 @@ class GroupsService:
             new_group = current_group
         return new_group
         
-    async def delete_group(self, id: UUID) -> GroupDatabaseSchema:
+    async def delete_group_by_id(self, id: UUID) -> GroupDatabaseSchema:
         group = await self.groups_repo.delete_all({"id": id})
+        return group
+    
+    async def delete_group_by_id_if_empty(self, id: UUID) -> GroupDatabaseSchema:
+        group = await self.get_group_by_id(id)
+        if not group.users:
+            await self.delete_group_by_id(id)
         return group

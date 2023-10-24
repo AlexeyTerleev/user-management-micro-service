@@ -34,9 +34,8 @@ async def me_patch(
     try:
         updated_group = await groups_service.update_group(user.group, new_values.group_name)
         updated_user = await users_service.update_user(user, new_values, updated_group)
-        group = await groups_service.get_group_by_id(user.group.id)
-        if not group.users:
-            await groups_service.delete_group(group.id)
+        if updated_group.id != user.group.id:
+            await groups_service.delete_group_by_id_if_empty(user.group.id)
         return updated_user
     except UsersService.UserExistsException as e:
         raise HTTPException(
@@ -60,9 +59,7 @@ async def me_delete(
 ):
     try:
         await users_service.delete_user_by_id(user.id)
-        group = await groups_service.get_group_by_id(user.group.id)
-        if not group.users:
-            await groups_service.delete_group(group.id)
+        await groups_service.delete_group_by_id_if_empty(user.group.id)
     except Exception as e:
         raise e
     
@@ -133,9 +130,8 @@ async def users_get(
         aim_user = await users_service.get_user_by_id(user_id)
         updated_group = await groups_service.update_group(aim_user.group, new_values.group_name)
         updated_user = await users_service.update_user(aim_user, new_values, updated_group)
-        group = await groups_service.get_group_by_id(user.group.id)
-        if not group.users:
-            await groups_service.delete_group(group.id)
+        if aim_user.group.id != updated_group.id:
+            await groups_service.delete_group_by_id_if_empty(aim_user.group.id)
         return updated_user
     except UsersService.UserExistsException as e:
         raise HTTPException(
@@ -150,5 +146,5 @@ async def users_get(
     except Exception as e:
         raise e
     
-# bug not working singup (creates user but throw exception)
 # export logic of deletion group if the group is empty
+# refresh-access token + reset password
