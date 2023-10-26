@@ -15,7 +15,7 @@ class UserSchema(BaseModel):
     phone_number: str
     email: EmailStr
     role: Role
-    img_path: str
+    img_path: str | None
 
     @field_validator("phone_number")
     def phone_validation(cls, v):
@@ -31,13 +31,12 @@ class UserSchema(BaseModel):
 class UserRegisterSchema(UserSchema):
     password: str
     group_name: str
-    img_path: HttpUrl
+    img_path: HttpUrl | None = None
 
 
 class UserCreateSchema(UserSchema):
     hashed_password: str
     group_id: UUID
-    img_path: str
 
 
 class UserUpdateSchema(BaseModel):

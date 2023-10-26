@@ -23,7 +23,7 @@ class Users(Base):
     email: Mapped[str]
     role: Mapped[Role]
     group_id: Mapped[UUID] = mapped_column(ForeignKey("groups.id"))
-    img_path: Mapped[str]
+    img_path: Mapped[str] = mapped_column(nullable=True)
     blocked: Mapped[bool] = mapped_column(default=False)
     created_at: Mapped[datetime] = mapped_column(server_default=func.now())
     modified_at: Mapped[datetime] = mapped_column(

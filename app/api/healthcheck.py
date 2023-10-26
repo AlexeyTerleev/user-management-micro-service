@@ -16,18 +16,5 @@ router = APIRouter(
 async def healthcheck():
     ...
 
-@router.post("/upload")
-async def upload(
-    file: UploadFile,
-    user: Annotated[UserOutSchema, Depends(get_current_unblocked_user)],
-    cloud_service: Annotated[CloudService, Depends(cloud_service)]
-):
-    try:
-        contents = file.file.read()
-        file.file.seek(0)
-        path = await cloud_service.upload_image(user.id, file.file)
-    finally:
-        file.file.close()
-    return path
 
 
