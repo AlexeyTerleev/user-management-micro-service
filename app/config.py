@@ -2,6 +2,14 @@ from pydantic import Field
 from pydantic_settings import BaseSettings
 
 
+class S3(BaseSettings):
+    url: str = Field("http://localstack:4566", env="S3_URL")
+    access_key_id: str = Field("S3_ACCESS_KEY_ID", env="S3_ACCESS_KEY_ID")
+    secret_access_key: str = Field("S3_SECRET_ACCESS_KEY", env="S3_SECRET_ACCESS_KEY")
+    region_name: str = Field("eu-central-1", env="S3_REGION_NAME")
+    bucket: str = Field("bucket", env="S3_BUCKET")
+
+
 class RedisSettings(BaseSettings):
     host: str = Field("redis", env="REDIS_HOST")
     port: str = Field("6379", env="REDIS_PORT")
@@ -34,6 +42,7 @@ class Settings(BaseSettings):
     db: DbSettings = DbSettings()
     auth: AuthSettings = AuthSettings()
     redis: RedisSettings = RedisSettings()
+    s3: S3 = S3()
 
 
 settings = Settings()

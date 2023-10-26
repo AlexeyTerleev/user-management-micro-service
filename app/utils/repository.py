@@ -1,5 +1,6 @@
 from abc import ABC, abstractmethod
 from typing import Callable
+import boto3
 
 from sqlalchemy import asc, delete, insert, select, update
 
@@ -7,6 +8,7 @@ from app.cache_storage.cache_storage import (
     async_session_maker as cache_async_session_maker,
 )
 from app.db.db import async_session_maker as db_async_session_maker
+from app.config import settings
 
 
 class AbstractDBRepository(ABC):
@@ -108,3 +110,28 @@ class RedisRepository(AbstractCacheRepository):
     async def sadd(self, key, value):
         async with cache_async_session_maker() as session:
             await session.sadd(key, value)
+
+
+class AbstractCloudRepository(ABC):
+    @abstractmethod
+    async def upload_file():
+        raise NotImplementedError
+
+
+class S3Repository(AbstractCloudRepository):
+    def __init__(self):
+        self.client = boto3.client(
+            "s3",
+            endpoint_url=settings.s3.url,
+            aws_access_key_id=settings.s3.access_key_id,
+            aws_secret_access_key=settings.s3.secret_access_key,
+            region_name=settings.s3.region_name,
+        )
+        self.bucket = settings.s3.bucket
+
+    async def upload_file(self, path: str, content: bytes):
+        self.client.upload_fileobj(
+            Fileobj=content,
+            Bucket=self.bucket,
+            Key=path
+        )

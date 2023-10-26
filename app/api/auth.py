@@ -30,8 +30,6 @@ async def auth_singup(
             status_code=status.HTTP_400_BAD_REQUEST,
             detail=f"{e.idtf} [{e.value}] is already used",
         )
-    except HTTPException as e:
-        raise e
     except Exception as e:
         raise e
 
@@ -53,8 +51,6 @@ async def auth_login(
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST, detail=f"Incorrect password"
         )
-    except HTTPException as e:
-        raise e
     except Exception as e:
         raise e
 
