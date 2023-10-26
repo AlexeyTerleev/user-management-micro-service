@@ -1,4 +1,5 @@
 from datetime import datetime
+from typing import List
 from uuid import UUID
 
 from pydantic import BaseModel
@@ -15,11 +16,15 @@ class GroupCreateSchema(GroupSchema):
     ...
 
 
-class GroupDatabaseSchema(GroupSchema):
+class GroupOutSchema(GroupSchema):
     id: UUID
     created_at: datetime
 
 
-class GroupOutSchema(GroupSchema):
+import app.schemas.users as users_schemas
+
+
+class GroupDatabaseSchema(GroupSchema):
     id: UUID
+    users: List[users_schemas.UserDatabaseSchema]
     created_at: datetime

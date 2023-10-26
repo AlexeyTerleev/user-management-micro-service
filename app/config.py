@@ -2,6 +2,12 @@ from pydantic import Field
 from pydantic_settings import BaseSettings
 
 
+class RedisSettings(BaseSettings):
+    host: str = Field("redis", env="REDIS_HOST")
+    port: str = Field("6379", env="REDIS_PORT")
+    password: str = Field("password", env="REDIS_PASS")
+
+
 class DbSettings(BaseSettings):
     user: str = Field("postgres", env="DB_USER")
     password: str = Field("postgres", env="DB_PASS")
@@ -10,7 +16,7 @@ class DbSettings(BaseSettings):
     name: str = Field("postgres", env="DB_NAME")
 
     def get_url(self):
-        return  f"postgresql+asyncpg://{self.user}:{self.password}@{self.host}:{self.port}/{self.name}"
+        return f"postgresql+asyncpg://{self.user}:{self.password}@{self.host}:{self.port}/{self.name}"
 
 
 class AuthSettings(BaseSettings):
@@ -27,6 +33,7 @@ class Settings(BaseSettings):
     project_name: str = Field("User management", env="PROJECT_NAME")
     db: DbSettings = DbSettings()
     auth: AuthSettings = AuthSettings()
+    redis: RedisSettings = RedisSettings()
 
 
 settings = Settings()
