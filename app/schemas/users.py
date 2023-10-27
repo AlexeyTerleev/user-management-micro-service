@@ -1,10 +1,7 @@
 import re
 from datetime import datetime
 from uuid import UUID
-
 from pydantic import BaseModel, EmailStr, HttpUrl, field_validator
-
-import app.schemas.groups as groups_schemas
 from app.utils.roles import Role
 
 
@@ -86,7 +83,7 @@ class UserDatabaseSchema(UserSchema):
 
 class UserOutSchema(UserSchema):
     id: UUID
-    group: groups_schemas.GroupOutSchema
+    group: "GroupOutSchema"
     hashed_password: str
     blocked: bool
     created_at: datetime
@@ -113,3 +110,7 @@ class TokenPayload(BaseModel):
 
     class Config:
         from_attributes = True
+
+
+from app.schemas.groups import GroupOutSchema
+UserOutSchema.update_forward_refs()
