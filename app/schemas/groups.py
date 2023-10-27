@@ -1,7 +1,6 @@
 from datetime import datetime
 from typing import List
 from uuid import UUID
-
 from pydantic import BaseModel
 
 
@@ -21,10 +20,11 @@ class GroupOutSchema(GroupSchema):
     created_at: datetime
 
 
-import app.schemas.users as users_schemas
-
-
 class GroupDatabaseSchema(GroupSchema):
     id: UUID
-    users: List[users_schemas.UserDatabaseSchema]
+    users: "List[UserDatabaseSchema]"
     created_at: datetime
+
+
+from app.schemas.users import UserDatabaseSchema
+GroupDatabaseSchema.update_forward_refs()

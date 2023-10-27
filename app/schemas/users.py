@@ -1,10 +1,7 @@
 import re
 from datetime import datetime
 from uuid import UUID
-
 from pydantic import BaseModel, EmailStr, HttpUrl, field_validator
-
-import app.schemas.groups as groups_schemas
 from app.utils.roles import Role
 
 
@@ -15,7 +12,7 @@ class UserSchema(BaseModel):
     phone_number: str
     email: EmailStr
     role: Role
-    img_path: str
+    img_path: str | None
 
     @field_validator("phone_number")
     def phone_validation(cls, v):
@@ -31,13 +28,12 @@ class UserSchema(BaseModel):
 class UserRegisterSchema(UserSchema):
     password: str
     group_name: str
-    img_path: HttpUrl
+    img_path: HttpUrl | None = None
 
 
 class UserCreateSchema(UserSchema):
     hashed_password: str
     group_id: UUID
-    img_path: str
 
 
 class UserUpdateSchema(BaseModel):
@@ -47,9 +43,8 @@ class UserUpdateSchema(BaseModel):
     phone_number: str | None = None
     email: EmailStr | None = None
     role: Role | None = None
-    img_path: HttpUrl | None = None
-    password: str | None = None
     group_name: str | None = None
+    img_path: HttpUrl | None = None
 
     @field_validator("phone_number")
     def phone_validation(cls, v):
@@ -66,9 +61,8 @@ class UserUpgradeSchema(BaseModel):
     phone_number: str | None = None
     email: EmailStr | None = None
     role: Role | None = None
-    img_path: str | None = None
-    hashed_password: str | None = None
     group_id: UUID | None = None
+    img_path: str | None = None
 
     @field_validator("phone_number")
     def phone_validation(cls, v):
@@ -89,7 +83,7 @@ class UserDatabaseSchema(UserSchema):
 
 class UserOutSchema(UserSchema):
     id: UUID
-    group: groups_schemas.GroupOutSchema
+    group: "GroupOutSchema"
     hashed_password: str
     blocked: bool
     created_at: datetime
@@ -116,3 +110,7 @@ class TokenPayload(BaseModel):
 
     class Config:
         from_attributes = True
+
+
+from app.schemas.groups import GroupOutSchema
+UserOutSchema.update_forward_refs()

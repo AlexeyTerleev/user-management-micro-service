@@ -1,8 +1,10 @@
 from app.repositories.cache import CacheRepository
+from app.repositories.cloud import CloudRepository
 from app.repositories.groups import GroupsRepository
 from app.repositories.users import UsersRepository
 from app.services.auth import AuthService
 from app.services.cache import CacheService
+from app.services.cloud import CloudService
 from app.services.groups import GroupsService
 from app.services.users import UsersService
 
@@ -25,3 +27,7 @@ def auth_service():
         GroupsService(GroupsRepository),
         CacheService(CacheRepository),
     )
+
+
+def cloud_service():
+    return CloudService(CloudRepository)

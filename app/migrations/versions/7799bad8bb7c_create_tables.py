@@ -40,7 +40,7 @@ def upgrade() -> None:
         sa.Column(
             "role", sa.Enum("user", "admin", "moderator", name="role"), nullable=False
         ),
-        sa.Column("group_id", sa.Uuid(), nullable=False),
+        sa.Column("group_id", sa.Uuid(), nullable=True),
         sa.Column("img_path", sa.String(), nullable=False),
         sa.Column("blocked", sa.Boolean(), nullable=False),
         sa.Column(

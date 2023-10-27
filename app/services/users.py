@@ -77,7 +77,7 @@ class UsersService:
         return user
 
     async def create_user(
-        self, new_user: UserRegisterSchema, new_user_group_id: int
+        self, new_user: UserRegisterSchema, new_user_group_id: UUID
     ) -> UserOutSchema:
         register_dict = new_user.dict()
         await self.__raise_except_if_user_exists(UserIdtfsShema(**register_dict))
@@ -87,11 +87,14 @@ class UsersService:
         return created_user
 
     async def update_user(
-        self, current_user: UserOutSchema, new_values: UserUpdateSchema, new_value_group
+        self,
+        current_user: UserOutSchema,
+        new_values: UserUpdateSchema,
+        new_value_group_id: UUID = None,
     ) -> UserOutSchema:
         update_dict = new_values.dict(exclude_unset=True)
         await self.__raise_except_if_user_exists(UserIdtfsShema(**update_dict))
-        upgrade_dct = await self.__transform_values(update_dict, new_value_group.id)
+        upgrade_dct = await self.__transform_values(update_dict, new_value_group_id)
         upgrade_dct = await self.__remove_unchaneged_values(current_user, upgrade_dct)
         if not upgrade_dct:
             raise UsersService.NothingToUpdateException
