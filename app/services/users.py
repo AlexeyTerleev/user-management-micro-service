@@ -87,7 +87,10 @@ class UsersService:
         return created_user
 
     async def update_user(
-        self, current_user: UserOutSchema, new_values: UserUpdateSchema, new_value_group_id: UUID = None
+        self,
+        current_user: UserOutSchema,
+        new_values: UserUpdateSchema,
+        new_value_group_id: UUID = None,
     ) -> UserOutSchema:
         update_dict = new_values.dict(exclude_unset=True)
         await self.__raise_except_if_user_exists(UserIdtfsShema(**update_dict))

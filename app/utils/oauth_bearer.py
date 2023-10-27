@@ -23,17 +23,16 @@ async def get_current_user(
             token, settings.auth.jwt_secret_key, algorithms=[settings.auth.algorithm]
         )
         token_data = TokenPayload(**payload)
-
-        if datetime.fromtimestamp(token_data.exp) < datetime.now():
-            raise HTTPException(
-                status_code=status.HTTP_401_UNAUTHORIZED,
-                detail="Token expired",
-                headers={"WWW-Authenticate": "Bearer"},
-            )
     except (jwt.exceptions.DecodeError, ValidationError):
         raise HTTPException(
             status_code=status.HTTP_403_FORBIDDEN,
             detail="Could not validate credentials",
+            headers={"WWW-Authenticate": "Bearer"},
+        )
+    except jwt.exceptions.ExpiredSignatureError as e:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Token expired",
             headers={"WWW-Authenticate": "Bearer"},
         )
     try:

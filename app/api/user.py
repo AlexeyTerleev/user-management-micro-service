@@ -4,11 +4,11 @@ from uuid import UUID
 from fastapi import APIRouter, Depends, HTTPException, UploadFile
 from starlette import status
 
-from app.api.dependencies import groups_service, users_service, cloud_service
+from app.api.dependencies import cloud_service, groups_service, users_service
 from app.schemas.users import UserOutSchema, UserUpdateSchema
+from app.services.cloud import CloudService
 from app.services.groups import GroupsService
 from app.services.users import UsersService
-from app.services.cloud import CloudService
 from app.utils.oauth_bearer import get_current_unblocked_user
 from app.utils.roles import Role
 
@@ -39,7 +39,9 @@ async def me_patch(
         updated_group = await groups_service.update_group(
             user.group, new_values.group_name
         )
-        updated_user = await users_service.update_user(user, new_values, updated_group.id)
+        updated_user = await users_service.update_user(
+            user, new_values, updated_group.id
+        )
         if updated_group.id != user.group.id:
             await groups_service.delete_group_by_id_if_empty(user.group.id)
         return updated_user
@@ -79,13 +81,14 @@ async def me_upload_photo(
     try:
         path = await cloud_service.upload_image(user.id, photo.file)
         try:
-            await users_service.update_user(user, UserUpdateSchema(img_path=path), user.group.id)
+            await users_service.update_user(
+                user, UserUpdateSchema(img_path=path), user.group.id
+            )
         except UsersService.NothingToUpdateException:
             pass
         return path
     except Exception as e:
         raise e
-
 
 
 @router.get("s", response_model=List[UserOutSchema])

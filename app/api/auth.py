@@ -8,6 +8,7 @@ from starlette import status
 from app.api.dependencies import auth_service
 from app.schemas.users import TokenSchema, UserOutSchema, UserRegisterSchema
 from app.services.auth import AuthService
+from app.services.email import EmailService
 from app.services.users import UsersService
 from app.utils.oauth_bearer import get_current_unblocked_user
 
@@ -82,10 +83,11 @@ async def auth_refresh_token(
 @router.post("/reset-password")
 async def auth_reset_password(
     user: Annotated[UserOutSchema, Depends(get_current_unblocked_user)],
+    email_service: Annotated[EmailService, Depends(EmailService)],
 ):
     try:
-        return None
-    except HTTPException as e:
-        raise e
+        url = "https://test_url"
+        response = await email_service.send_reset_password_url(user.email, url)
+        return response
     except Exception as e:
         raise e

@@ -46,9 +46,8 @@ class UserUpdateSchema(BaseModel):
     phone_number: str | None = None
     email: EmailStr | None = None
     role: Role | None = None
-    img_path: HttpUrl | None = None
-    password: str | None = None
     group_name: str | None = None
+    img_path: HttpUrl | None = None
 
     @field_validator("phone_number")
     def phone_validation(cls, v):
@@ -65,9 +64,8 @@ class UserUpgradeSchema(BaseModel):
     phone_number: str | None = None
     email: EmailStr | None = None
     role: Role | None = None
-    img_path: str | None = None
-    hashed_password: str | None = None
     group_id: UUID | None = None
+    img_path: str | None = None
 
     @field_validator("phone_number")
     def phone_validation(cls, v):
