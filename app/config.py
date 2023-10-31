@@ -45,9 +45,10 @@ class AuthSettings(BaseModel):
 
 class Settings(BaseSettings):
 
-    model_config = SettingsConfigDict(env_file='app/.env')
+    model_config = SettingsConfigDict(env_file='.env')
 
     PROJECT_NAME: str = "User Management"
+    MODE: str
 
     db: DbSettings
     auth: AuthSettings
