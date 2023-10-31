@@ -122,12 +122,12 @@ class S3Repository(AbstractCloudRepository):
     def __init__(self):
         self.client = boto3.client(
             "s3",
-            endpoint_url=settings.aws.url,
-            aws_access_key_id=settings.aws.access_key_id,
-            aws_secret_access_key=settings.aws.secret_access_key,
-            region_name=settings.aws.region_name,
+            endpoint_url=settings.aws.AWS_URL,
+            aws_access_key_id=settings.aws.AWS_ACCESS_KEY_ID,
+            aws_secret_access_key=settings.aws.AWS_SECRET_ACCESS_KEY,
+            region_name=settings.aws.AWS_REGION_NAME,
         )
-        self.bucket = settings.aws.s3.bucket
+        self.bucket = settings.aws.s3.S3_BUCKET
 
     async def upload_file(self, path: str, content: bytes):
         self.client.upload_fileobj(Fileobj=content, Bucket=self.bucket, Key=path)

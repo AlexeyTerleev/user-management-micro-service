@@ -20,7 +20,7 @@ async def get_current_user(
 ) -> UserOutSchema:
     try:
         payload = jwt.decode(
-            token, settings.auth.jwt_secret_key, algorithms=[settings.auth.algorithm]
+            token, settings.auth.JWT_SECRET_KEY, algorithms=[settings.auth.ALGORITHM]
         )
         token_data = TokenPayload(**payload)
     except (jwt.exceptions.DecodeError, ValidationError):

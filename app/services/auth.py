@@ -48,8 +48,8 @@ class AuthService:
     async def refresh_tokens(self, refresh_token) -> TokenSchema:
         payload = jwt.decode(
             refresh_token,
-            settings.auth.jwt_refresh_secret_key,
-            algorithms=[settings.auth.algorithm],
+            settings.auth.JWT_REFRESH_SECRET_KEY,
+            algorithms=[settings.auth.ALGORITHM],
         )
         token_data = TokenPayload(**payload)
         if datetime.fromtimestamp(token_data.exp) < datetime.now():

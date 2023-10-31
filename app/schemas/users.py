@@ -1,7 +1,7 @@
 import re
 from datetime import datetime
 from uuid import UUID
-from pydantic import BaseModel, EmailStr, HttpUrl, field_validator
+from pydantic import BaseModel, ConfigDict, EmailStr, HttpUrl, field_validator
 from app.utils.roles import Role
 
 
@@ -21,8 +21,7 @@ class UserSchema(BaseModel):
             raise ValueError("Phone Number Invalid.")
         return v
 
-    class Config:
-        from_attributes = True
+    model_config = ConfigDict(from_attributes = True)
 
 
 class UserRegisterSchema(UserSchema):
@@ -100,17 +99,15 @@ class TokenSchema(BaseModel):
     access_token: str
     refresh_token: str
 
-    class Config:
-        from_attributes = True
+    model_config = ConfigDict(from_attributes = True)
 
 
 class TokenPayload(BaseModel):
     sub: str = None
     exp: int = None
 
-    class Config:
-        from_attributes = True
+    model_config = ConfigDict(from_attributes = True)
 
 
 from app.schemas.groups import GroupOutSchema
-UserOutSchema.update_forward_refs()
+UserOutSchema.model_rebuild()
