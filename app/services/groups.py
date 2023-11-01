@@ -5,15 +5,24 @@ from app.utils.repository import AbstractDBRepository
 
 
 class GroupsService:
+
+    class GroupNotFoundException(Exception):
+        def __init__(self, *args: object) -> None:
+            super().__init__(*args)
+
     def __init__(self, groups_repo: AbstractDBRepository):
         self.groups_repo: AbstractDBRepository = groups_repo()
 
     async def get_group_by_name(self, name: str) -> GroupDatabaseSchema:
         group = await self.groups_repo.find_one({"name": name})
+        if not group:
+            raise GroupsService.GroupNotFoundException()
         return group
 
     async def get_group_by_id(self, id: UUID) -> GroupDatabaseSchema:
         group = await self.groups_repo.find_one({"id": id})
+        if not group:
+            raise GroupsService.GroupNotFoundException()
         return group
 
     async def create_group(self, new_group: GroupCreateSchema) -> GroupDatabaseSchema:
@@ -21,8 +30,9 @@ class GroupsService:
         return group
 
     async def get_or_create_group(self, name: str) -> GroupDatabaseSchema:
-        group = await self.get_group_by_name(name)
-        if group is None:
+        try:
+            group = await self.get_group_by_name(name)
+        except GroupsService.GroupNotFoundException:
             group = await self.create_group(GroupCreateSchema(name=name))
         return group
 
