@@ -1,6 +1,7 @@
 import asyncio
 import pytest
 import pytest_asyncio
+from contextlib import nullcontext as does_not_raise
 
 from app.api.dependencies import groups_service
 from app.services.groups import GroupsService
@@ -9,7 +10,7 @@ from app.schemas.groups import GroupCreateSchema
 @pytest_asyncio.fixture
 async def group():
     service = groups_service()
-    group_schema = GroupCreateSchema(name="group")
+    group_schema = GroupCreateSchema(name="group_name")
     group = await service.create_group(group_schema)
     return group
 
@@ -18,10 +19,18 @@ async def group():
 class TestGroupsService:
 
     @pytest.mark.asyncio
-    async def test_get_group_by_name(self, group):
+    @pytest.mark.parametrize(
+        "group_name, expectation",
+        [
+            ("group_name", does_not_raise()),
+            ("wrong_group_name", pytest.raises(GroupsService.GroupNotFoundException)),
+        ]
+    )
+    async def test_get_group_by_name(self, group, group_name, expectation):
         service = groups_service()
-        getted = await service.get_group_by_name(group.name)
-        assert group == getted
+        with expectation:
+            getted = await service.get_group_by_name(group_name)
+            assert group == getted
 
     @pytest.mark.asyncio
     async def test_get_group_by_id(self, group):
@@ -30,14 +39,18 @@ class TestGroupsService:
         assert group == getted
 
     @pytest.mark.asyncio
-    async def test_get_or_create_group(self):
+    @pytest.mark.parametrize(
+        "group_name, result",
+        [
+            ("group_name", 1),
+            ("new_group_name", 2),
+        ]
+    )
+    async def test_get_or_create_group(self, group, group_name, result):
         service = groups_service()
-        name = "test_group"
-
-        created = await service.get_or_create_group(name)
-        getted = await service.get_or_create_group(name)
-
-        assert created == getted
+        await service.get_or_create_group(group_name)
+        tested = await service.groups_repo.find_all({})
+        assert len(tested) == result
 
     @pytest.mark.asyncio
     async def test_update_group(self):

@@ -53,7 +53,7 @@ class SQLAlchemyRepository(AbstractDBRepository):
             if offset:
                 stmt = stmt.offset(offset)
             res = await session.execute(stmt)
-            res = [row[0].to_read_model() for row in res.all()]
+            res = [row[0].to_read_model() for row in res.unique().all()]
             return res
 
     async def find_one(self, filter_by: dict):

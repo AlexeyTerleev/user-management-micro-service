@@ -38,12 +38,10 @@ class AuthService:
         user = await self.users_service.get_user_by_idtf(form_data.username)
         if not verify_password(form_data.password, user.hashed_password):
             raise AuthService.IncorrectPasswordException
-        access_token = create_access_token(user.id)
-        refresh_token = create_refresh_token(user.id)
-        return {
-            "access_token": access_token,
-            "refresh_token": refresh_token,
-        }
+        return TokenSchema(
+            access_token=create_access_token(user.id),
+            refresh_token=create_refresh_token(user.id),
+        )
 
     async def refresh_tokens(self, refresh_token) -> TokenSchema:
         payload = jwt.decode(
@@ -57,9 +55,7 @@ class AuthService:
         if await self.cache_service.token_in_blackist(refresh_token):
             raise jwt.ExpiredSignatureError
         await self.cache_service.blacklist_token(refresh_token)
-        access_token = create_access_token(token_data.sub)
-        refresh_token = create_refresh_token(token_data.sub)
-        return {
-            "access_token": access_token,
-            "refresh_token": refresh_token,
-        }
+        return TokenSchema(
+            access_token=create_access_token(token_data.sub),
+            refresh_token=create_refresh_token(token_data.sub),
+        )
