@@ -1,11 +1,11 @@
-import asyncio
-import pytest
-from app.api.dependencies import cloud_service
 import io
+
+import pytest
+
+from app.api.dependencies import cloud_service
 
 
 class TestGroupsService:
-
     @pytest.mark.asyncio
     async def test_send_reset_password_url(self):
         service = cloud_service()

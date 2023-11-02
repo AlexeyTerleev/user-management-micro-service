@@ -5,7 +5,6 @@ from app.utils.repository import AbstractDBRepository
 
 
 class GroupsService:
-
     class GroupNotFoundException(Exception):
         def __init__(self, *args: object) -> None:
             super().__init__(*args)

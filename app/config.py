@@ -1,5 +1,5 @@
-from pydantic_settings import BaseSettings, SettingsConfigDict
 from pydantic import BaseModel
+from pydantic_settings import BaseSettings, SettingsConfigDict
 
 
 class S3(BaseModel):
@@ -44,8 +44,7 @@ class AuthSettings(BaseModel):
 
 
 class Settings(BaseSettings):
-
-    model_config = SettingsConfigDict(env_file='.env')
+    model_config = SettingsConfigDict(env_file=".env")
 
     PROJECT_NAME: str = "User Management"
     MODE: str
@@ -54,5 +53,6 @@ class Settings(BaseSettings):
     auth: AuthSettings
     redis: RedisSettings
     aws: AWS
+
 
 settings = Settings()

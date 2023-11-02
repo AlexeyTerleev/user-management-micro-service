@@ -1,13 +1,14 @@
 from datetime import datetime
 from typing import List
 from uuid import UUID
+
 from pydantic import BaseModel, ConfigDict
 
 
 class GroupSchema(BaseModel):
     name: str
 
-    model_config = ConfigDict(from_attributes = True)
+    model_config = ConfigDict(from_attributes=True)
 
 
 class GroupCreateSchema(GroupSchema):
@@ -26,4 +27,5 @@ class GroupDatabaseSchema(GroupSchema):
 
 
 from app.schemas.users import UserDatabaseSchema
+
 GroupDatabaseSchema.model_rebuild()

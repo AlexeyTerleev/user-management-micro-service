@@ -1,12 +1,9 @@
-import asyncio
 import pytest
+
 from app.api.dependencies import cache_service
 
 
-
-
 class TestCacheService:
-
     @pytest.mark.asyncio
     async def test_tocken_not_in_balcklist(self):
         service = cache_service()
@@ -21,4 +18,3 @@ class TestCacheService:
         assert token_in_blacklist
 
         await service.cache_repo.srem("token_blacklist", "test_tocken")
-        

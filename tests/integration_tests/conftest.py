@@ -1,8 +1,6 @@
-import asyncio
-
-import pytest
 import pytest_asyncio
 from httpx import AsyncClient
+
 from app.main import app
 
 
@@ -23,13 +21,38 @@ async def create_user(test_app):
         "role": "USER",
         "img_path": "https://username.com/",
         "password": "password",
-        "group_name": "group"
+        "group_name": "group",
     }
-    await test_app.post("auth/singup", json=payload)
+    response = await test_app.post("auth/singup", json=payload)
+    return response.json()
 
 
 @pytest_asyncio.fixture
-async def tokens(test_app, create_user):
+async def create_admin(test_app):
+    payload = {
+        "name": "admin",
+        "surname": "admin",
+        "username": "admin",
+        "phone_number": "+211111111111",
+        "email": "admin@example.com",
+        "role": "ADMIN",
+        "img_path": "https://admin.com/",
+        "password": "password",
+        "group_name": "group",
+    }
+    response = await test_app.post("auth/singup", json=payload)
+    return response.json()
+
+
+@pytest_asyncio.fixture
+async def user_tokens(test_app, create_user):
     payload = {"username": "username", "password": "password"}
+    response = await test_app.post("auth/login", data=payload)
+    return response.json()
+
+
+@pytest_asyncio.fixture
+async def admin_tokens(test_app, create_admin):
+    payload = {"username": "admin", "password": "password"}
     response = await test_app.post("auth/login", data=payload)
     return response.json()

@@ -6,7 +6,12 @@ from fastapi.security import OAuth2PasswordRequestForm
 from starlette import status
 
 from app.api.dependencies import auth_service
-from app.schemas.users import TokenSchema, RefreshTokenSchema, UserOutSchema, UserRegisterSchema
+from app.schemas.users import (
+    RefreshTokenSchema,
+    TokenSchema,
+    UserOutSchema,
+    UserRegisterSchema,
+)
 from app.services.auth import AuthService
 from app.services.email import EmailService
 from app.services.users import UsersService

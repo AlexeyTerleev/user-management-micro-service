@@ -99,7 +99,7 @@ class AbstractCacheRepository(ABC):
     @abstractmethod
     async def sadd():
         raise NotImplementedError
-    
+
     @abstractmethod
     async def srem():
         raise NotImplementedError
@@ -118,6 +118,7 @@ class RedisRepository(AbstractCacheRepository):
     async def srem(self, key, value):
         async with cache_async_session_maker() as session:
             await session.srem(key, value)
+
 
 class AbstractCloudRepository(ABC):
     @abstractmethod

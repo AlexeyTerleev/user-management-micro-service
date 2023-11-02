@@ -1,11 +1,12 @@
-import asyncio
-import pytest
-import pytest_asyncio
 from contextlib import nullcontext as does_not_raise
 
+import pytest
+import pytest_asyncio
+
 from app.api.dependencies import groups_service
-from app.services.groups import GroupsService
 from app.schemas.groups import GroupCreateSchema
+from app.services.groups import GroupsService
+
 
 @pytest_asyncio.fixture
 async def group():
@@ -17,14 +18,13 @@ async def group():
 
 @pytest.mark.usefixtures("empty_users_repo", "empty_groups_repo")
 class TestGroupsService:
-
     @pytest.mark.asyncio
     @pytest.mark.parametrize(
         "group_name, expectation",
         [
             ("group_name", does_not_raise()),
             ("wrong_group_name", pytest.raises(GroupsService.GroupNotFoundException)),
-        ]
+        ],
     )
     async def test_get_group_by_name(self, group, group_name, expectation):
         service = groups_service()
@@ -44,7 +44,7 @@ class TestGroupsService:
         [
             ("group_name", 1),
             ("new_group_name", 2),
-        ]
+        ],
     )
     async def test_get_or_create_group(self, group, group_name, result):
         service = groups_service()
