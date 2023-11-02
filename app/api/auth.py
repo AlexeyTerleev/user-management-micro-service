@@ -6,7 +6,7 @@ from fastapi.security import OAuth2PasswordRequestForm
 from starlette import status
 
 from app.api.dependencies import auth_service
-from app.schemas.users import TokenSchema, UserOutSchema, UserRegisterSchema
+from app.schemas.users import TokenSchema, RefreshTokenSchema, UserOutSchema, UserRegisterSchema
 from app.services.auth import AuthService
 from app.services.email import EmailService
 from app.services.users import UsersService
@@ -58,11 +58,11 @@ async def auth_login(
 
 @router.post("/refresh-token", response_model=TokenSchema)
 async def auth_refresh_token(
-    refresh_token: str,
+    refresh_token: RefreshTokenSchema,
     auth_service: Annotated[AuthService, Depends(auth_service)],
 ):
     try:
-        tokens = await auth_service.refresh_tokens(refresh_token)
+        tokens = await auth_service.refresh_tokens(refresh_token.refresh_token)
         return tokens
     except jwt.exceptions.DecodeError as e:
         raise HTTPException(

@@ -4,6 +4,8 @@ from app.db.db import Base, engine
 from app.models.groups import GroupDatabaseSchema
 from app.models.users import UserDatabaseSchema
 
+from app.api.dependencies import groups_service, users_service
+
 import pytest
 import pytest_asyncio
 import asyncio
@@ -23,3 +25,13 @@ async def setup_db():
     async with engine.begin() as conn:
         await conn.run_sync(Base.metadata.drop_all)
         await conn.run_sync(Base.metadata.create_all)
+
+@pytest_asyncio.fixture
+async def empty_groups_repo():
+    service = groups_service()
+    await service.groups_repo.delete_all({})
+
+@pytest_asyncio.fixture
+async def empty_users_repo():
+    service = users_service()
+    await service.users_repo.delete_all({})

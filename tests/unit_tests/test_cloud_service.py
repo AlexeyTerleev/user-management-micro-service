@@ -4,8 +4,6 @@ from app.api.dependencies import cloud_service
 import io
 
 
-
-
 class TestGroupsService:
 
     @pytest.mark.asyncio
@@ -13,5 +11,4 @@ class TestGroupsService:
         service = cloud_service()
         file = io.BytesIO(b"\x00\x00\x00\x00\x00\x00\x00\x00\x01\x01\x01\x01\x01\x01")
         url = await service.upload_image("test_id", file)
-        print(url)
         assert url
