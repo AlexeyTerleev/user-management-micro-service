@@ -5,25 +5,9 @@ from uuid import UUID
 from pydantic import BaseModel, ConfigDict, EmailStr, HttpUrl, field_validator
 
 from app.utils.roles import Role
+from app.schemas.base import UserSchema
+from app.schemas.groups import GroupOutSchema
 
-
-class UserSchema(BaseModel):
-    name: str
-    surname: str
-    username: str
-    phone_number: str
-    email: EmailStr
-    role: Role
-    img_path: str | None
-
-    @field_validator("phone_number")
-    def phone_validation(cls, v):
-        regex = r"^(\+)[1-9][0-9\-\(\)\.]{9,15}$"
-        if v and not re.search(regex, v, re.I):
-            raise ValueError("Phone Number Invalid.")
-        return v
-
-    model_config = ConfigDict(from_attributes=True)
 
 
 class UserRegisterSchema(UserSchema):
@@ -72,19 +56,9 @@ class UserUpgradeSchema(BaseModel):
             raise ValueError("Phone Number Invalid.")
         return v
 
-
-class UserDatabaseSchema(UserSchema):
-    id: UUID
-    group_id: UUID
-    hashed_password: str
-    blocked: bool
-    created_at: datetime
-    modified_at: datetime
-
-
 class UserOutSchema(UserSchema):
     id: UUID
-    group: "GroupOutSchema"
+    group: GroupOutSchema
     hashed_password: str
     blocked: bool
     created_at: datetime
@@ -115,8 +89,3 @@ class TokenPayload(BaseModel):
     exp: int = None
 
     model_config = ConfigDict(from_attributes=True)
-
-
-from app.schemas.groups import GroupOutSchema
-
-UserOutSchema.model_rebuild()

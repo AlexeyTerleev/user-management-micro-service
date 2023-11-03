@@ -7,7 +7,8 @@ from sqlalchemy.sql import func
 from sqlalchemy_utils import URLType
 
 from app.db.db import Base
-from app.schemas.users import UserDatabaseSchema, UserOutSchema
+from app.schemas.users import UserOutSchema
+from app.schemas.base import UserDatabaseSchema
 from app.utils.roles import Role
 
 
