@@ -64,7 +64,7 @@ class TestAuthService:
                 "wrong_password",
                 pytest.raises(AuthService.IncorrectPasswordException),
             ),
-        ],
+        ]
     )
     async def test_login(self, user, login, password, expectation):
         service = auth_service()

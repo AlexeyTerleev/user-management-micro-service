@@ -2,6 +2,7 @@ import asyncio
 
 import pytest
 import pytest_asyncio
+from faker import Faker
 
 from app.api.dependencies import groups_service, users_service
 from app.config import settings
@@ -36,3 +37,30 @@ async def empty_groups_repo():
 async def empty_users_repo():
     service = users_service()
     await service.users_repo.delete_all({})
+
+
+async def creation_payload():
+    faker = Faker()
+    payload = {
+        "name": faker.first_name(),
+        "surname": faker.last_name(),
+        "username": faker.user_name(),
+        "phone_number": f"+375{faker.msisdn()[4:]}",
+        "email": faker.email(),
+        "img_path": faker.url(),
+        "password": faker.password(),
+        "group_name": faker.random_element(elements=('group_1', 'group_2', 'group_3'))
+    }
+    return payload
+
+@pytest_asyncio.fixture
+async def user_creation_payload():
+    payload = await creation_payload()
+    payload["role"] = "USER"
+    return payload
+
+@pytest_asyncio.fixture
+async def admin_creation_payload():
+    payload = await creation_payload()
+    payload["role"] = "ADMIN"
+    return payload

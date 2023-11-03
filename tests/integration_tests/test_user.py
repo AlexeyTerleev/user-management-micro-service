@@ -42,14 +42,12 @@ class TestUser:
     @pytest.mark.asyncio
     async def test_user_get(self, test_app, admin_tokens, create_user):
         headers = {"Authorization": f"Bearer {admin_tokens['access_token']}"}
-        print(create_user)
         response = await test_app.get(f"user/{create_user['id']}", headers=headers)
         assert response.status_code == 200
 
     @pytest.mark.asyncio
     async def test_user_patch(self, test_app, admin_tokens, create_user):
         headers = {"Authorization": f"Bearer {admin_tokens['access_token']}"}
-        print(create_user)
         payload = {"name": "new_name"}
         response = await test_app.patch(
             f"user/{create_user['id']}", headers=headers, json=payload
