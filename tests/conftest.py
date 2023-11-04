@@ -49,15 +49,17 @@ async def creation_payload():
         "email": faker.email(),
         "img_path": faker.url(),
         "password": faker.password(),
-        "group_name": faker.random_element(elements=('group_1', 'group_2', 'group_3'))
+        "group_name": faker.random_element(elements=("group_1", "group_2", "group_3")),
     }
     return payload
+
 
 @pytest_asyncio.fixture
 async def user_creation_payload():
     payload = await creation_payload()
     payload["role"] = "USER"
     return payload
+
 
 @pytest_asyncio.fixture
 async def admin_creation_payload():

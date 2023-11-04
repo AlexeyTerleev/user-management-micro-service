@@ -49,6 +49,7 @@ services:
       - ./aws:/etc/localstack/init/ready.d
 
   web:
+    container_name: web
     build: 
       context: .
       network: host

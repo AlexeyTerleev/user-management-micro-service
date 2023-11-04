@@ -8,14 +8,6 @@ from app.schemas.groups import GroupCreateSchema
 from app.services.groups import GroupsService
 
 
-@pytest_asyncio.fixture
-async def group():
-    service = groups_service()
-    group_schema = GroupCreateSchema(name="group_name")
-    group = await service.create_group(group_schema)
-    return group
-
-
 @pytest.mark.usefixtures("empty_users_repo", "empty_groups_repo")
 class TestGroupsService:
     @pytest.mark.asyncio

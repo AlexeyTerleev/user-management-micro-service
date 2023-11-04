@@ -10,31 +10,6 @@ from app.services.auth import AuthService
 from app.services.users import UsersService
 
 
-@pytest_asyncio.fixture
-async def user():
-    service = auth_service()
-    user_schema = UserRegisterSchema(
-        name="name",
-        surname="surname",
-        username="username",
-        phone_number="+375299292242",
-        email="email@email.com",
-        role="USER",
-        password="password",
-        group_name="group",
-    )
-    user = await service.singup(user_schema)
-    return user
-
-
-@pytest_asyncio.fixture
-async def tokens(user):
-    service = auth_service()
-    form = OAuth2PasswordRequestForm(username="username", password="password")
-    tokens = await service.login(form)
-    return tokens
-
-
 @pytest.mark.usefixtures("empty_users_repo", "empty_groups_repo")
 class TestAuthService:
     @pytest.mark.asyncio
@@ -64,9 +39,9 @@ class TestAuthService:
                 "wrong_password",
                 pytest.raises(AuthService.IncorrectPasswordException),
             ),
-        ]
+        ],
     )
-    async def test_login(self, user, login, password, expectation):
+    async def test_login(self, auth_user_singup, login, password, expectation):
         service = auth_service()
         with expectation:
             tokens = await service.login(

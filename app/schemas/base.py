@@ -1,7 +1,9 @@
 import re
 from datetime import datetime
 from uuid import UUID
+
 from pydantic import BaseModel, ConfigDict, EmailStr, field_validator
+
 from app.utils.roles import Role
 
 
@@ -23,6 +25,7 @@ class UserSchema(BaseModel):
 
     model_config = ConfigDict(from_attributes=True)
 
+
 class UserDatabaseSchema(UserSchema):
     id: UUID
     group_id: UUID
@@ -34,5 +37,5 @@ class UserDatabaseSchema(UserSchema):
 
 class GroupSchema(BaseModel):
     name: str
-    
+
     model_config = ConfigDict(from_attributes=True)

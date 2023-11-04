@@ -4,10 +4,9 @@ from uuid import UUID
 
 from pydantic import BaseModel, ConfigDict, EmailStr, HttpUrl, field_validator
 
-from app.utils.roles import Role
 from app.schemas.base import UserSchema
 from app.schemas.groups import GroupOutSchema
-
+from app.utils.roles import Role
 
 
 class UserRegisterSchema(UserSchema):
@@ -55,6 +54,7 @@ class UserUpgradeSchema(BaseModel):
         if v and not re.search(regex, v, re.I):
             raise ValueError("Phone Number Invalid.")
         return v
+
 
 class UserOutSchema(UserSchema):
     id: UUID

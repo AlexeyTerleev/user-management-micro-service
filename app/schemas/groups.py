@@ -18,4 +18,3 @@ class GroupDatabaseSchema(GroupSchema):
     id: UUID
     users: List[UserDatabaseSchema]
     created_at: datetime
-
