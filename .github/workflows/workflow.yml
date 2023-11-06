@@ -34,10 +34,12 @@ jobs:
         poetry run black .
         poetry run isort .
 
-    - name: Build the stack
-      run: |
-        docker-compose up -d
+    - name: Start containers
+      run: docker-compose -f "docker-compose.yml" up -d --build
+
+    - name: Check running containers
+      run: docker ps -a
         
     - name: Test with pytest
       run: |
-        docker-compose exec web bash -c "poetry run pytest"
+        docker-compose exec -T web poetry run pytest
