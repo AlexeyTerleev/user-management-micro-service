@@ -1,28 +1,12 @@
 import re
 from datetime import datetime
 from uuid import UUID
-from pydantic import BaseModel, EmailStr, HttpUrl, field_validator
+
+from pydantic import BaseModel, ConfigDict, EmailStr, HttpUrl, field_validator
+
+from app.schemas.base import UserSchema
+from app.schemas.groups import GroupOutSchema
 from app.utils.roles import Role
-
-
-class UserSchema(BaseModel):
-    name: str
-    surname: str
-    username: str
-    phone_number: str
-    email: EmailStr
-    role: Role
-    img_path: str | None
-
-    @field_validator("phone_number")
-    def phone_validation(cls, v):
-        regex = r"^(\+)[1-9][0-9\-\(\)\.]{9,15}$"
-        if v and not re.search(regex, v, re.I):
-            raise ValueError("Phone Number Invalid.")
-        return v
-
-    class Config:
-        from_attributes = True
 
 
 class UserRegisterSchema(UserSchema):
@@ -72,18 +56,9 @@ class UserUpgradeSchema(BaseModel):
         return v
 
 
-class UserDatabaseSchema(UserSchema):
-    id: UUID
-    group_id: UUID
-    hashed_password: str
-    blocked: bool
-    created_at: datetime
-    modified_at: datetime
-
-
 class UserOutSchema(UserSchema):
     id: UUID
-    group: "GroupOutSchema"
+    group: GroupOutSchema
     hashed_password: str
     blocked: bool
     created_at: datetime
@@ -100,17 +75,17 @@ class TokenSchema(BaseModel):
     access_token: str
     refresh_token: str
 
-    class Config:
-        from_attributes = True
+    model_config = ConfigDict(from_attributes=True)
+
+
+class RefreshTokenSchema(BaseModel):
+    refresh_token: str
+
+    model_config = ConfigDict(from_attributes=True)
 
 
 class TokenPayload(BaseModel):
     sub: str = None
     exp: int = None
 
-    class Config:
-        from_attributes = True
-
-
-from app.schemas.groups import GroupOutSchema
-UserOutSchema.update_forward_refs()
+    model_config = ConfigDict(from_attributes=True)

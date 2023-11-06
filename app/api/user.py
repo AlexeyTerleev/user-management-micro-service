@@ -126,7 +126,7 @@ async def users_get(
         raise e
 
 
-@router.get("/", response_model=UserOutSchema)
+@router.get("/{user_id}", response_model=UserOutSchema)
 async def users_get(
     user_id: UUID,
     user: Annotated[UserOutSchema, Depends(get_current_unblocked_user)],
@@ -154,7 +154,7 @@ async def users_get(
         raise e
 
 
-@router.patch("/", response_model=UserOutSchema)
+@router.patch("/{user_id}", response_model=UserOutSchema)
 async def users_get(
     user_id: UUID,
     new_values: UserUpdateSchema,

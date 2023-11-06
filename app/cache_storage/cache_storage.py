@@ -6,9 +6,9 @@ from app.config import settings
 class async_session_maker:
     def __init__(self):
         self.session = redis.Redis(
-            host=settings.redis.host,
-            port=settings.redis.port,
-            password=settings.redis.password,
+            host=settings.redis.REDIS_HOST,
+            port=settings.redis.REDIS_PORT,
+            password=settings.redis.REDIS_PASS,
         )
 
     async def __aenter__(self):
