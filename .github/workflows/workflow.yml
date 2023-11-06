@@ -40,4 +40,4 @@ jobs:
         
     - name: Test with pytest
       run: |
-        docker-compose exec web pytest
+        docker-compose -T exec web poetry run pytest
