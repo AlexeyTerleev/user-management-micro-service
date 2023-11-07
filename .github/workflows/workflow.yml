@@ -13,7 +13,6 @@ env:
   REDIS: ${{ secrets.REDIS }}
   AWS: ${{ secrets.AWS }}
   MODE: ${{ secrets.MODE }}
-
   DB_USER: ${{ secrets.DB_USER }}
   DB_PASS: ${{ secrets.DB_PASS }}
   DB_HOST: ${{ secrets.DB_HOST }}
@@ -37,7 +36,7 @@ jobs:
         ports:
           - 32768:5432
         env:
-          POSTGRES_DB: ${{ env.DB_HOST }}
+          POSTGRES_DB: ${{ env.DB_NAME }}
           POSTGRES_USER: ${{ env.DB_USER }}
           POSTGRES_PASSWORD: ${{ env.DB_PASS }}
 
