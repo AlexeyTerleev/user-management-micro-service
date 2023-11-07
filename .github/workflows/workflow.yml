@@ -74,6 +74,9 @@ jobs:
     - name: Migrate
       run: |
         poetry run alembic upgrade head
+      env:
+        POSTGRES_HOST: ${{ secrets.DB_HOST }}
+        POSTGRES_PORT: ${{ secrets.DB_HOST }}
     
     - name: Start server
       run: |
