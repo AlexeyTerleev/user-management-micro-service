@@ -33,9 +33,9 @@ jobs:
 
     services:
       db:
-        image: postgres:15
+        image: postgres:12
         ports:
-          - 5432:5432
+          - 32768:5432
         env:
           POSTGRES_DB: ${{ env.DB_HOST }}
           POSTGRES_USER: ${{ env.DB_USER }}
