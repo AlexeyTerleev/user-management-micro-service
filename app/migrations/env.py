@@ -16,6 +16,7 @@ from app.db.db import Base
 config = context.config
 
 section = config.config_ini_section
+print(settings.db)
 config.set_section_option(section, "DB_USER", settings.db.DB_USER)
 config.set_section_option(section, "DB_PASS", settings.db.DB_PASS)
 config.set_section_option(section, "DB_HOST", settings.db.DB_HOST)
