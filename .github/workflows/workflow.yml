@@ -31,7 +31,7 @@ jobs:
     runs-on: ubuntu-latest
 
     services:
-      db:
+      test_db:
         image: postgres:12
         ports:
           - 32768:5432
@@ -70,13 +70,6 @@ jobs:
       run: |
         poetry run black .
         poetry run isort .
-    
-    - name: Migrate
-      run: |
-        poetry run alembic upgrade head
-      env:
-        POSTGRES_HOST: ${{ secrets.DB_HOST }}
-        POSTGRES_PORT: ${{ secrets.DB_HOST }}
     
     - name: Start server
       run: |
