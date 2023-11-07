@@ -84,5 +84,4 @@ jobs:
 
       - name: Test with pytest
         run: |
-          docker run --network="host" $registry/my_image bash -c "RAILS_ENV=test rails db:create && RAILS_ENV=test rails db:migrate && rails test"
-          poetry run pytest tests/unit_tests
+          poetry run pytest
