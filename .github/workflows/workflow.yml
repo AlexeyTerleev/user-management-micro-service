@@ -7,11 +7,49 @@ on:
 permissions:
   contents: read
 
+env:
+  DB: ${{ secrets.DB }}
+  AUTH: ${{ secrets.AUTH }}
+  REDIS: ${{ secrets.REDIS }}
+  AWS: ${{ secrets.AWS }}
+  MODE: ${{ secrets.MODE }}
+
+  DB_USER: ${{ secrets.DB_USER }}
+  DB_PASS: ${{ secrets.DB_PASS }}
+  DB_HOST: ${{ secrets.DB_HOST }}
+  DB_PORT: ${{ secrets.DB_PORT }}
+  DB_NAME: ${{ secrets.DB_NAME }}
+  JWT_SECRET_KEY: ${{ secrets.JWT_SECRET_KEY }}
+  JWT_REFRESH_SECRET_KEY: ${{ secrets.JWT_REFRESH_SECRET_KEY }}
+  ALGORITHM: ${{ secrets.ALGORITHM }}
+  REDIS_HOST: ${{ secrets.REDIS_HOST }}
+  REDIS_PORT: ${{ secrets.REDIS_PORT }}
+  REDIS_PASS: ${{ secrets.REDIS_PASS }}
+
 jobs:
   build:
 
     runs-on: ubuntu-latest
 
+    services:
+      db:
+        image: postgres:15
+        ports:
+          - 5432:5432
+        env:
+          POSTGRES_DB: ${{ env.DB_HOST }}
+          POSTGRES_USER: ${{ env.DB_USER }}
+          POSTGRES_PASSWORD: ${{ env.DB_PASS }}
+
+      redis:
+        image: redis:6.2-alpine
+        ports:
+          - 6379:6379
+        env:
+          REDIS_HOST: ${{ env.REDIS_HOST }}
+          REDIS_PORT: ${{ env.REDIS_PORT }}
+          REDIS_PASSWORD: ${{ env.REDIS_PASS }}
+      
     steps:
     - uses: actions/checkout@v3
         
@@ -33,13 +71,15 @@ jobs:
       run: |
         poetry run black .
         poetry run isort .
+    
+    - name: Migrate
+      run: |
+        poetry run alembic upgrade head
+    
+    - name: Start server
+      run: |
+        poetry run uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload
 
-    - name: Start containers
-      run: docker-compose -f "docker-compose.yml" up -d --build
-
-    - name: Check running containers
-      run: docker ps -a
-        
     - name: Test with pytest
       run: |
-        docker compose -f "docker-compose.yml" exec -T web bash -c "poetry run pytest"
+        poetry run pytest
