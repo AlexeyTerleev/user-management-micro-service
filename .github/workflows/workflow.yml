@@ -74,7 +74,7 @@ jobs:
 
       - name: TES
         run: |
-          echo ${{env.DB}}
+          echo ${{env.DB.DB_NAME }}
           echo ${{env.DB_NAME}}
       - name: Migrate
         run: |
