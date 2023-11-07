@@ -76,6 +76,11 @@ jobs:
         run: |
           echo ${{env.DB.DB_NAME }}
           echo ${{env.DB_NAME}}
+
+      - name: Wait
+        run: |
+          sleep 30
+          
       - name: Migrate
         run: |
           poetry run alembic upgrade head
