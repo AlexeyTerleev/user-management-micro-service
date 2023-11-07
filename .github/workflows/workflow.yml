@@ -24,6 +24,9 @@ env:
   REDIS_HOST: ${{ secrets.REDIS_HOST }}
   REDIS_PORT: ${{ secrets.REDIS_PORT }}
   REDIS_PASS: ${{ secrets.REDIS_PASS }}
+  AWS_DEFAULT_REGION: ${{ secrets.AWS_DEFAULT_REGION }}
+  AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+  AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
 
 jobs:
   build:
@@ -48,6 +51,23 @@ jobs:
           REDIS_HOST: ${{ env.REDIS_HOST }}
           REDIS_PORT: ${{ env.REDIS_PORT }}
           REDIS_PASSWORD: ${{ env.REDIS_PASS }}
+      
+      localstack:
+        image: localstack/localstack
+        env:
+          DEBUG: ${DEBUG-}
+          DOCKER_HOST: unix:///var/run/docker.sock
+          SERVICES: s3,ses
+          AWS_DEFAULT_REGION: ${{ env.AWS_DEFAULT_REGION }}
+          AWS_ACCESS_KEY_ID: ${{ env.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ env.AWS_SECRET_ACCESS_KEY }}
+        ports:
+          - "4566:4566"            # LocalStack Gateway
+          - "4510-4559:4510-4559"  # external services port range
+        volumes:
+          - ${LOCALSTACK_VOLUME_DIR:-./volume}:/var/lib/localstack
+          - /var/run/docker.sock:/var/run/docker.sock
+          - ./aws:/etc/localstack/init/ready.d
       
     steps:
       - name: Check out repository code
