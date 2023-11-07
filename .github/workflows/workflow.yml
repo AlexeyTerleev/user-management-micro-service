@@ -78,8 +78,9 @@ jobs:
           
           echo "Waiting for LocalStack startup..."  # Wait 30 seconds for the LocalStack container
           localstack wait -t 30                     # to become ready before timing out 
-          echo "Startup complete"          
-      - name: Run some Tests against LocalStack
+          echo "Startup complete"     
+
+      - name: Prepare LocalStack
         run: |
           ./aws/buckets.sh
           ./aws/verify-email-sender.sh 
@@ -99,10 +100,6 @@ jobs:
         run: |
           poetry run alembic upgrade head
       
-      - name: Run Server
-        run: |
-          poetry run uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload -d
-
       - name: Test with pytest
         run: |
           poetry run pytest
