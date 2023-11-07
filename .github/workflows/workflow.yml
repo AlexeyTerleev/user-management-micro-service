@@ -37,11 +37,6 @@ jobs:
           POSTGRES_DB: ${{ env.DB_NAME }}
           POSTGRES_USER: ${{ env.DB_USER }}
           POSTGRES_PASSWORD: ${{ env.DB_PASS }}
-        options: >-
-          --health-cmd pg_isready
-          --health-interval 10s
-          --health-timeout 5s
-          --health-retries 5
         ports:
           - 5432:5432
 
@@ -77,15 +72,15 @@ jobs:
           poetry run black .
           poetry run isort .
 
+      - name: TES
+        run: |
+          echo ${{env.DB}}
+          echo ${{env.DB_NAME}}
       - name: Migrate
         run: |
           poetry run alembic upgrade head
-        env:
-          # The hostname used to communicate with the PostgreSQL service container
-          POSTGRES_HOST: test_db
-          # The default PostgreSQL port
-          POSTGRES_PORT: 5432
 
       - name: Test with pytest
         run: |
+          docker run --network="host" $registry/my_image bash -c "RAILS_ENV=test rails db:create && RAILS_ENV=test rails db:migrate && rails test"
           poetry run pytest tests/unit_tests
