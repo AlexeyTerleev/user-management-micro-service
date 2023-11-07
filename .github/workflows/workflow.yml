@@ -82,7 +82,7 @@ jobs:
       - name: Run some Tests against LocalStack
         run: |
           ./aws/buckets.sh
-          ./verify-email-sender.sh 
+          ./aws/verify-email-sender.sh 
           
       - name: Lint
         run: |
