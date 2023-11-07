@@ -45,6 +45,12 @@ jobs:
 
       redis:
         image: redis:6.2-alpine
+        ports:
+          - 6379:6379
+        env:
+          REDIS_HOST: ${{ env.REDIS_HOST }}
+          REDIS_PORT: ${{ env.REDIS_PORT }}
+          REDIS_PASSWORD: ${{ env.REDIS_PASS }}
       
     steps:
       - name: Check out repository code
