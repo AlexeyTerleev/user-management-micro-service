@@ -51,8 +51,6 @@ jobs:
           REDIS_HOST: ${{ env.REDIS_HOST }}
           REDIS_PORT: ${{ env.REDIS_PORT }}
           REDIS_PASSWORD: ${{ env.REDIS_PASS }}
-        options: |
-          --entrypoint redis-server
       
     steps:
       - name: Check out repository code
@@ -100,6 +98,10 @@ jobs:
       - name: Migrate
         run: |
           poetry run alembic upgrade head
+      
+      - name: Run Server
+        run: |
+          poetry run uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload -d
 
       - name: Test with pytest
         run: |
