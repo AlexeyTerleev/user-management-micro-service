@@ -51,6 +51,8 @@ jobs:
           REDIS_HOST: ${{ env.REDIS_HOST }}
           REDIS_PORT: ${{ env.REDIS_PORT }}
           REDIS_PASSWORD: ${{ env.REDIS_PASS }}
+        command: |
+          redis-server --save 20 1 --loglevel warning --requirepass password
       
     steps:
       - name: Check out repository code
