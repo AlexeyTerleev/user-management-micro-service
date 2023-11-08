@@ -1,0 +1,93 @@
+name: User Management
+
+on:
+  pull_request:
+    branches: [ "dev" ]
+
+permissions:
+  contents: read
+
+env:
+  DB: ${{ secrets.DB }}
+  AUTH: ${{ secrets.AUTH }}
+  REDIS: ${{ secrets.REDIS }}
+  AWS: ${{ secrets.AWS }}
+  MODE: ${{ secrets.MODE }}
+  DB_USER: ${{ secrets.DB_USER }}
+  DB_PASS: ${{ secrets.DB_PASS }}
+  DB_NAME: ${{ secrets.DB_NAME }}
+  REDIS_HOST: ${{ secrets.REDIS_HOST }}
+  REDIS_PORT: ${{ secrets.REDIS_PORT }}
+  REDIS_PASS: ${{ secrets.REDIS_PASS }}
+  AWS_DEFAULT_REGION: ${{ secrets.AWS_DEFAULT_REGION }}
+  AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+  AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+  
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+
+    services:
+      test_db:
+        image: postgres:12
+        env:
+          POSTGRES_DB: ${{ env.DB_NAME }}
+          POSTGRES_USER: ${{ env.DB_USER }}
+          POSTGRES_PASSWORD: ${{ env.DB_PASS }}
+        ports:
+          - 5432:5432
+      
+    steps:
+      - name: Check out repository code
+        uses: actions/checkout@v4
+          
+      - name: Set up Python 3.10
+        uses: actions/setup-python@v3
+        with:
+          python-version: "3.10"
+
+      - name: Install Poetry
+        uses: snok/install-poetry@v1
+          
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install poetry
+          poetry install
+
+      - name: Start Redis
+        uses: getong/redis-action@v1
+        with:
+          redis version: '6.2-alpine' 
+          host port: ${{ secrets.REDIS_PORT }}
+          container port: ${{ secrets.REDIS_PORT }}
+          redis password: ${{ secrets.REDIS_PASS }}
+      
+      - name: Start LocalStack
+        run: |
+          pip install localstack awscli-local[ver1] # install LocalStack cli and awslocal
+          docker pull localstack/localstack         # Make sure to pull the latest version of the image
+          localstack start -d                       # Start LocalStack in the background
+          
+          echo "Waiting for LocalStack startup..."  # Wait 30 seconds for the LocalStack container
+          localstack wait -t 30                     # to become ready before timing out 
+          echo "Startup complete"     
+
+      - name: Prepare LocalStack
+        run: |
+          ./aws/buckets.sh
+          ./aws/verify-email-sender.sh 
+          
+      - name: Lint
+        run: |
+          poetry run black .
+          poetry run isort .
+
+      - name: Migrate
+        run: |
+          poetry run alembic upgrade head
+      
+      - name: Test with pytest
+        run: |
+          poetry run pytest
