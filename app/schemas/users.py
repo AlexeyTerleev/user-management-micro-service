@@ -83,9 +83,13 @@ class RefreshTokenSchema(BaseModel):
 
     model_config = ConfigDict(from_attributes=True)
 
+class TokenData(BaseModel):
+    id: str
+    group_id: str
+    role: str
 
 class TokenPayload(BaseModel):
-    sub: str = None
+    sub: TokenData = None
     exp: int = None
 
     model_config = ConfigDict(from_attributes=True)
