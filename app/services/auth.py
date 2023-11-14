@@ -4,6 +4,7 @@ import jwt
 
 from app.config import settings
 from app.schemas.users import (
+    TokenData,
     TokenPayload,
     TokenSchema,
     UserOutSchema,
@@ -39,8 +40,8 @@ class AuthService:
         if not verify_password(form_data.password, user.hashed_password):
             raise AuthService.IncorrectPasswordException
         return TokenSchema(
-            access_token=create_access_token(user.id),
-            refresh_token=create_refresh_token(user.id),
+            access_token=create_access_token(TokenData(id=str(user.id), group_id=str(user.group.id), role=str(user.role))),
+            refresh_token=create_refresh_token(TokenData(id=str(user.id), group_id=str(user.group.id), role=str(user.role))),
         )
 
     async def refresh_tokens(self, refresh_token) -> TokenSchema:
