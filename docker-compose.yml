@@ -2,7 +2,7 @@ version: "3.8"
 
 services:
 
-  db:
+  um-db:
     container_name: user-management-db
     image: postgres:12
     ports:
@@ -11,8 +11,10 @@ services:
       - POSTGRES_USER=postgres
       - POSTGRES_PASSWORD=postgres
       - POSTGRES_DB=postgres
+    networks:
+      - innotter-micro-service_internship-net
 
-  test_db:
+  um-test-db:
     container_name: user-management-test-db
     image: postgres:12
     environment: 
@@ -21,8 +23,10 @@ services:
       - POSTGRES_DB=test
     ports:
       - "32768:5432"
+    networks:
+      - innotter-micro-service_internship-net
 
-  redis:
+  um-redis:
     container_name: user-management-redis
     image: redis:6.2-alpine
     environment:
@@ -32,8 +36,10 @@ services:
     command: redis-server --save 20 1 --loglevel warning --requirepass password
     ports:
       - "6379:6379"
+    networks:
+      - innotter-micro-service_internship-net
 
-  localstack:
+  um-localstack:
     container_name: user-management-localstack-main
     image: localstack/localstack
     ports:
@@ -50,8 +56,10 @@ services:
       - ${LOCALSTACK_VOLUME_DIR:-./volume}:/var/lib/localstack
       - /var/run/docker.sock:/var/run/docker.sock
       - ./aws:/etc/localstack/init/ready.d
+    networks:
+      - innotter-micro-service_internship-net
 
-  app:
+  um-app:
     container_name: user-management-app
     build: 
       context: .
@@ -62,5 +70,12 @@ services:
     ports:
       - "8000:8000"
     depends_on:
-      - db
-      - test_db
+      - um-db
+      - um-test-db
+    networks:
+      - innotter-micro-service_internship-net
+
+
+networks:
+  innotter-micro-service_internship-net:
+    external: true
