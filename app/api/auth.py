@@ -1,10 +1,12 @@
 from typing import Annotated
 
 import jwt
+import aio_pika
 from fastapi import APIRouter, Depends, HTTPException
 from fastapi.security import OAuth2PasswordRequestForm
 from starlette import status
 
+from app.config import settings
 from app.api.dependencies import auth_service
 from app.schemas.users import (
     RefreshTokenSchema,
@@ -13,7 +15,7 @@ from app.schemas.users import (
     UserRegisterSchema,
 )
 from app.services.auth import AuthService
-from app.services.email import EmailService
+from app.services.rabbit_mq import RabbitMQService
 from app.services.users import UsersService
 from app.utils.oauth_bearer import get_current_unblocked_user
 
@@ -85,14 +87,13 @@ async def auth_refresh_token(
         raise e
 
 
-@router.post("/reset-password")
+@router.post("/reset-password", status_code=204)
 async def auth_reset_password(
     user: Annotated[UserOutSchema, Depends(get_current_unblocked_user)],
-    email_service: Annotated[EmailService, Depends(EmailService)],
+    rabbit_mq_service: Annotated[RabbitMQService, Depends(RabbitMQService)],
 ):
+    url = "reset_password_url"
     try:
-        url = "https://test_url"
-        response = await email_service.send_reset_password_url(user.email, url)
-        return response
+        await rabbit_mq_service.send_reset_password_message(user.email, url)
     except Exception as e:
         raise e

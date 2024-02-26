@@ -43,6 +43,18 @@ class AuthSettings(BaseModel):
     refresh_token_expire_minutes: int = 60 * 24 * 7
 
 
+class RabbitMQSettings(BaseModel):
+    USER: str
+    PASS: str
+    HOST: str
+    PORT: str
+
+    RESET_PASSWORD_QUEUE: str = "reset-password-stream"
+
+    def get_url(self):
+        return f"amqp://{self.USER}:{self.PASS}@{self.HOST}:{self.PORT}/"
+
+
 class Settings(BaseSettings):
     model_config = SettingsConfigDict(env_file=".env")
 
@@ -53,6 +65,7 @@ class Settings(BaseSettings):
     auth: AuthSettings
     redis: RedisSettings
     aws: AWS
+    rabbit_mq: RabbitMQSettings
 
 
 settings = Settings()
