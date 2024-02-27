@@ -44,15 +44,15 @@ class AuthSettings(BaseModel):
 
 
 class RabbitMQSettings(BaseModel):
-    USER: str
-    PASS: str
-    HOST: str
-    PORT: str
+    RABBIT_USER: str
+    RABBIT_PASS: str
+    RABBIT_HOST: str
+    RABBIT_PORT: str
 
     RESET_PASSWORD_QUEUE: str = "reset-password-stream"
 
     def get_url(self):
-        return f"amqp://{self.USER}:{self.PASS}@{self.HOST}:{self.PORT}/"
+        return f"amqp://{self.RABBIT_USER}:{self.RABBIT_PASS}@{self.RABBIT_HOST}:{self.RABBIT_PORT}/"
 
 
 class Settings(BaseSettings):
