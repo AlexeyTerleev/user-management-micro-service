@@ -15,7 +15,7 @@ class RabbitMQService:
         async with connection:
 
             channel = await connection.channel()
-            queue = await channel.declare_queue(settings.rabbit_mq.RESET_PASSWORD_QUEUE)
+            queue = await channel.declare_queue(settings.rabbit_mq.RESET_PASSWORD_QUEUE, durable=True, arguments={"x-queue-type": "quorum"})
 
             message = {
                 "email": email,
@@ -26,6 +26,9 @@ class RabbitMQService:
             bson_message = bson.BSON.encode(message)
 
             await channel.default_exchange.publish(
-                aio_pika.Message(bson_message),
+                aio_pika.Message(
+                    bson_message,
+                    delivery_mode=aio_pika.DeliveryMode.PERSISTENT,
+                ),
                 routing_key=queue.name,
             )
