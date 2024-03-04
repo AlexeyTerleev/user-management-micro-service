@@ -4,12 +4,6 @@ from fastapi.security import OAuth2PasswordRequestForm
 from app.api.dependencies import auth_service, groups_service, users_service
 from app.schemas.groups import GroupCreateSchema
 from app.schemas.users import UserRegisterSchema
-from app.services.email import EmailService
-
-
-@pytest_asyncio.fixture
-async def email_service():
-    return EmailService()
 
 
 @pytest_asyncio.fixture
